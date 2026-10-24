@@ -10,9 +10,10 @@
 .act{width:51px;height:51px;font-size:9px}.act i{font-size:16px}.act.hunt{width:72px;height:72px}.act.focus{background:#265c65d9;border-color:#b3eef0}.act.focus.pressed{background:#4d9b9f}.act.climb{background:#635039d9}
 #settingButton{background:#143b2cef;color:#fff;border:1px solid #f7f4cd43;padding:10px 12px;cursor:pointer;pointer-events:auto;min-height:44px;border-radius:12px}
 #settings{position:absolute;right:12px;top:calc(73px + env(safe-area-inset-top,0px));z-index:13;padding:12px 15px;display:none;min-width:212px;pointer-events:auto}#settings.open{display:block}#settings label{display:flex;gap:10px;align-items:center;font-size:12px}#settings input{width:21px;height:21px;accent-color:#b0da89}#settings p{font-size:10px;color:#c9daba;margin:7px 0 0}
-#stance{position:absolute;left:50%;top:calc(61px + env(safe-area-inset-top,0px));transform:translateX(-50%);color:#f8e5a7;font-size:10px;font-weight:800;letter-spacing:.12em;z-index:4;text-shadow:0 2px 5px #0c211c;pointer-events:none;white-space:nowrap}
+#reachHint{position:absolute;top:calc(84px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);padding:5px 8px;border-radius:9px;color:#fae7ab;background:#182f25ad;border:1px solid #f5dc8755;font-size:10px;font-weight:650;letter-spacing:.03em;display:none;white-space:nowrap;z-index:5;pointer-events:none}#stance{position:absolute;left:50%;top:calc(61px + env(safe-area-inset-top,0px));transform:translateX(-50%);color:#f8e5a7;font-size:10px;font-weight:800;letter-spacing:.12em;z-index:4;text-shadow:0 2px 5px #0c211c;pointer-events:none;white-space:nowrap}
 #cinemaBarTop,#cinemaBarBottom{position:absolute;left:0;right:0;height:0;background:#0b1512;z-index:7;pointer-events:none;transition:height .15s}#cinemaBarTop{top:0}#cinemaBarBottom{bottom:0}.cinematic #cinemaBarTop,.cinematic #cinemaBarBottom{height:8vh}.cinematic #controls{opacity:.18;pointer-events:none}.cinematic #radar{opacity:.12}
 @media(max-width:530px){#actions{max-width:192px;gap:4px}.act{width:43px;height:43px;font-size:8px}.act.hunt{height:67px;width:67px}.act i{font-size:15px}#stick{width:106px;height:106px}#nub{left:26px;top:26px}#settingButton{padding:9px}}
+@media(max-width:530px){#reachHint{top:auto;bottom:calc(159px + env(safe-area-inset-bottom,0px));font-size:10px}}
 @media(max-height:490px){#actions{max-width:246px}.act{width:44px;height:44px}.act.hunt{width:62px;height:62px}#stance{top:36px}}
 </style>
 <script>
@@ -54,7 +55,7 @@ window.hunterError=function(msg){
 </script></head>
 <body><div id="game"><canvas id="view" aria-label="3D sculpted clay forest with a cobra hunting a rat"></canvas>
 <div id="hud"><div id="brand" class="glass"><b>🐍 SILENT HUNTER</b><small>CLAY 3D · COBRA HUNTER v0.8</small></div><div id="scores"><div class="glass score">CAUGHT <strong id="caught">0</strong></div><div class="glass score">LENGTH <strong id="length">1.6m</strong></div><button id="settingButton" onclick="window.hunterSettings()" aria-label="Settings">⚙</button><button id="pause" onclick="window.hunterPause()" aria-label="Pause the game">Ⅱ</button></div></div>
-<div id="settings" class="glass"><label><input type="checkbox" id="invertX"> Invert X-axis</label><p>Applies to steering and Focus aim. Saved on this device.</p></div><div id="stance">SLITHER</div><div id="cinemaBarTop"></div><div id="cinemaBarBottom"></div><div id="radar" class="glass"><div class="radarrow"><span>RAT AWARENESS</span><b id="ratState">IN BURROW</b></div><div id="meterbg"><div id="meterfill"></div></div></div><div id="info"></div><div id="corner">FOCUS: sweep aim like a torch · gold ring = cobra reach</div><div id="quality">OFFLINE • CLAY 3D</div>
+<div id="settings" class="glass"><label><input type="checkbox" id="invertX"> Invert X-axis</label><p>Applies to steering and Focus aim. Saved on this device.</p></div><div id="stance">SLITHER</div><div id="reachHint" aria-live="off"></div><div id="cinemaBarTop"></div><div id="cinemaBarBottom"></div><div id="radar" class="glass"><div class="radarrow"><span>RAT AWARENESS</span><b id="ratState">IN BURROW</b></div><div id="meterbg"><div id="meterfill"></div></div></div><div id="info"></div><div id="corner">FOCUS: sweep aim like a torch · gold ring = cobra reach</div><div id="quality">OFFLINE • CLAY 3D</div>
 <div id="controls"><div id="stick" aria-label="Snake movement joystick"><div id="nub"></div></div><div id="actions"><button class="act focus" id="focus" onclick="window.hunterFocus()"><i>⊕</i>FOCUS</button><button class="act climb" id="climb" onclick="window.hunterClimb()"><i>↟</i>CLIMB</button><button class="act" id="sense" onclick="window.hunterSense()"><i>◉</i>SENSE</button><button class="act" id="sneak" onclick="window.hunterSneak()"><i>◌</i>SNEAK</button><button class="act hunt" id="strike" onclick="window.hunterStrike()"><i>⚡</i>STRIKE</button></div></div>
 <div id="overlay"><div id="panel"><div id="tag">CLAY 3D STEALTH HUNT · 100% OFFLINE</div><h1 id="modalTitle">The Silent Hunter</h1><p id="modalText">A hungry rat leaves its burrow to forage. Slide through grass, use rocks and fallen logs for cover, watch its vision cone, and strike before it escapes.</p><div id="features"><div><strong>SLITHER</strong>Steer and move with the left joystick. Camera follows your head.</div><div><strong>STALK</strong>Hide your entire coiled body in bushes. Sneak to stay low.</div><div><strong>STRIKE</strong>Focus and sweep your raised head like a torch; see your reach, then lunge toward ground prey.</div><div><strong>GROW</strong>Climb trees for birds and eggs; watch cinematic swallowing.</div></div><button id="play" onpointerdown="return window.beginHunt(event)" onclick="return window.beginHunt(event)">START HUNT</button><p id="bootStatus">If tapping Start Hunt does nothing, this viewer may be blocking JavaScript. Open the game in Safari or host it on GitHub Pages.</p><p id="smallhelp">Keyboard: WASD steer/aim · F focus · C climb · Space strike · Q sneak · P pause. No internet or downloads required.</p></div></div><div id="error" role="alert"></div></div>
 <script>
@@ -70,21 +71,26 @@ Geometry.prototype.vert=function(p,n,c){this.v.push(p[0],p[1],p[2],n[0],n[1],n[2
 Geometry.prototype.tri=function(a,b,c,n,col){this.vert(a,n,col);this.vert(b,n,col);this.vert(c,n,col);};
 Geometry.prototype.quad=function(a,b,c,d,n,col){this.tri(a,b,c,n,col);this.tri(a,c,d,n,col);};
 Geometry.prototype.box=function(x,y,z,sx,sy,sz,col,rot){var hx=sx*.5,hy=sy*.5,hz=sz*.5,cs=Math.cos(rot||0),sn=Math.sin(rot||0);var v=[[-hx,-hy,-hz],[hx,-hy,-hz],[hx,hy,-hz],[-hx,hy,-hz],[-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz]];for(var i=0;i<8;i++){var p=v[i],px=p[0],pz=p[2];p[0]=x+px*cs+pz*sn;p[1]+=y;p[2]=z-px*sn+pz*cs;}var faces=[[4,5,6,7,0,0,1],[1,0,3,2,0,0,-1],[5,1,2,6,1,0,0],[0,4,7,3,-1,0,0],[7,6,2,3,0,1,0],[0,1,5,4,0,-1,0]];for(var k=0;k<faces.length;k++){var f=faces[k],nx=f[4]*cs+f[6]*sn,nz=-f[4]*sn+f[6]*cs;var shade=k===4?1.13:k===5?.59:k===0?.91:k===1?.76:1;var color=[clamp(col[0]*shade,0,1),clamp(col[1]*shade,0,1),clamp(col[2]*shade,0,1)];this.quad(v[f[0]],v[f[1]],v[f[2]],v[f[3]],[nx,f[5],nz],color);}};
-// Rounded low-poly clay volumes; flat facets with gently varying normals and no external assets.
-Geometry.prototype.clayBlob=function(x,y,z,sx,sy,sz,col,yaw,rings,sides){
- rings=rings||7;sides=sides||10;var ca=Math.cos(yaw||0),sa=Math.sin(yaw||0);
+// Sculpted rounded clay volumes with smooth vertex normals and matte directional lighting.
+Geometry.prototype.clayBlob=function(x,y,z,sx,sy,sz,col,yaw,rings,sides,pitch){
+ rings=rings||7;sides=sides||10;var ca=Math.cos(yaw||0),sa=Math.sin(yaw||0),cpit=Math.cos(pitch||0),spit=Math.sin(pitch||0);
  function v(phi,theta){var cp=Math.cos(phi),xx=Math.sin(theta)*cp,yy=Math.sin(phi),zz=Math.cos(theta)*cp;
-   return [x+(xx*sx*ca+zz*sz*sa),y+yy*sy,z+(-xx*sx*sa+zz*sz*ca)];}
- for(var i=0;i<rings;i++){var lat0=-Math.PI/2+i*Math.PI/rings,lat1=-Math.PI/2+(i+1)*Math.PI/rings;
- for(var j=0;j<sides;j++){var a=j*TAU/sides,b=(j+1)*TAU/sides;
-   var A=v(lat0,a),B=v(lat0,b),D=v(lat1,a),E=v(lat1,b);
-   var nx=(A[0]+B[0]+D[0]+E[0])/4-x,ny=(A[1]+B[1]+D[1]+E[1])/4-y,nz=(A[2]+B[2]+D[2]+E[2])/4-z;
-   var L=Math.hypot(nx,ny,nz)||1,n=[nx/L,ny/L,nz/L];
-   this.quad(A,B,E,D,n,col);
- }}
+  var localY=yy*sy*cpit+zz*sz*spit,localZ=zz*sz*cpit-yy*sy*spit;
+  var xxr=xx*sx*ca+localZ*sa,zzr=-xx*sx*sa+localZ*ca;
+  var gx=xx/Math.max(.001,sx),gy=yy/Math.max(.001,sy),gz=zz/Math.max(.001,sz);
+  var ny=gy*cpit+gz*spit,nzp=gz*cpit-gy*spit,nx=gx*ca+nzp*sa,nz=-gx*sa+nzp*ca,nl=Math.hypot(nx,ny,nz)||1;
+  return {p:[x+xxr,y+localY,z+zzr],n:[nx/nl,ny/nl,nz/nl]};}
+ for(var i=0;i<rings;i++){
+  var lat0=-Math.PI/2+i*Math.PI/rings,lat1=-Math.PI/2+(i+1)*Math.PI/rings;
+  for(var j=0;j<sides;j++){
+   var a=j*TAU/sides,b=(j+1)*TAU/sides,A=v(lat0,a),B=v(lat0,b),D=v(lat1,a),E=v(lat1,b);
+   for(var vertex of [A,B,E,A,E,D])this.vert(vertex.p,vertex.n,col);
+  }
+ }
 };
 Geometry.prototype.clayLink=function(a,b,r,col){
- var dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=Math.hypot(dx,dy,dz)||1,axis=[dx/L,dy/L,dz/L],side=[axis[2],0,-axis[0]],sl=Math.hypot(...side)||1;side=side.map(x=>x/sl);
+ var dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=Math.hypot(dx,dy,dz)||1,axis=[dx/L,dy/L,dz/L],side=[axis[2],0,-axis[0]],sl=Math.hypot(...side);
+ if(sl<.0001){side=[1,0,0];sl=1;}side=side.map(x=>x/sl);
  var up=[axis[1]*side[2]-axis[2]*side[1],axis[2]*side[0]-axis[0]*side[2],axis[0]*side[1]-axis[1]*side[0]];
  var sides=9;for(var i=0;i<sides;i++){var t=i*TAU/sides,u=(i+1)*TAU/sides;
    function point(p,theta){var c=Math.cos(theta),q=Math.sin(theta);return [p.x+r*(side[0]*c+up[0]*q*.90),p.y+r*(side[1]*c+up[1]*q*.90),p.z+r*(side[2]*c+up[2]*q*.90)];}
@@ -92,12 +98,24 @@ Geometry.prototype.clayLink=function(a,b,r,col){
    this.quad(point(a,t),point(a,u),point(b,u),point(b,t),n,col);
  }
 };
+// Budget-friendly sculpted grass tufts: two bent, tapered leaves rather than dozens of ellipsoid faces.
+Geometry.prototype.clayBlade=function(x,y,z,size,col,yaw){
+ for(var j=0;j<2;j++){var ang=(yaw||0)+j*Math.PI*.57,c=Math.cos(ang),sn=Math.sin(ang),w=.064+size*.14;
+  var A=[x-c*w,y,z-sn*w],B=[x+c*w,y,z+sn*w];
+  var midX=x+sn*.026,midZ=z-c*.026;
+  var D=[midX-c*w*.73,y+size*.62,midZ-sn*w*.73],E=[midX+c*w*.73,y+size*.62,midZ+sn*w*.73];
+  var T=[x+sn*size*.20,y+size,z-c*size*.20],normal=[-sn,0,c];
+  this.quad(A,B,E,D,normal,col);this.tri(D,E,T,normal,col);
+  this.quad(D,E,B,A,normal.map(t=>-t),col);this.tri(T,E,D,normal.map(t=>-t),col);
+ }
+};
 Geometry.prototype.clayTrunk=function(x,y,z,rad,height,col){var sides=9;for(var i=0;i<sides;i++){var a=i*TAU/sides,b=(i+1)*TAU/sides;var co=i%3===0?C.wood2:col;
   var p=[x+Math.cos(a)*rad,y,z+Math.sin(a)*rad],q=[x+Math.cos(b)*rad,y,z+Math.sin(b)*rad],u=[x+Math.cos(a)*rad*.75,y+height,z+Math.sin(a)*rad*.75],v=[x+Math.cos(b)*rad*.75,y+height,z+Math.sin(b)*rad*.75];this.quad(p,u,v,q,[Math.cos((a+b)/2),0,Math.sin((a+b)/2)],co);
  }};
 Geometry.prototype.link3=function(a,b,r,color){
  var dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=Math.hypot(dx,dy,dz)||1;
- var u=[dx/L,dy/L,dz/L],s=[u[2],0,-u[0]],sl=Math.hypot(...s)||1;s=s.map(k=>k/sl);
+ var u=[dx/L,dy/L,dz/L],s=[u[2],0,-u[0]],sl=Math.hypot(...s);
+ if(sl<.0001){s=[1,0,0];sl=1;}s=s.map(k=>k/sl);
  var q=[u[1]*s[2]-u[2]*s[1],u[2]*s[0]-u[0]*s[2],u[0]*s[1]-u[1]*s[0]];
  var corners=function(p){return [[p.x+s[0]*r+q[0]*r*.82,p.y+s[1]*r+q[1]*r*.82,p.z+s[2]*r+q[2]*r*.82],[p.x-s[0]*r+q[0]*r*.82,p.y-s[1]*r+q[1]*r*.82,p.z-s[2]*r+q[2]*r*.82],[p.x-s[0]*r-q[0]*r*.82,p.y-s[1]*r-q[1]*r*.82,p.z-s[2]*r-q[2]*r*.82],[p.x+s[0]*r-q[0]*r*.82,p.y+s[1]*r-q[1]*r*.82,p.z+s[2]*r-q[2]*r*.82]];};
  var A=corners(a),B=corners(b);for(var j=0;j<4;j++){var k=(j+1)%4,n=j===0?q:j===1?s.map(v=>-v):j===2?q.map(v=>-v):s;this.quad(A[j],B[j],B[k],A[k],n,color);}this.quad(A[3],A[2],A[1],A[0],u.map(v=>-v),color);this.quad(B[0],B[1],B[2],B[3],u,color);
@@ -113,7 +131,7 @@ if(!inside(ix,iy-1,iz))this.quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,
 }};
 Geometry.prototype.plane=function(a,b,c,d,col){var ab=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],ac=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],n=[ab[1]*ac[2]-ab[2]*ac[1],ab[2]*ac[0]-ab[0]*ac[2],ab[0]*ac[1]-ab[1]*ac[0]],l=Math.hypot(...n)||1;n=n.map(v=>v/l);this.quad(a,b,c,d,n,col);};
 // ----- Minimal WebGL1 3D renderer. No Three.js, CDN, imports, fetch or server. -----
-var canvas=document.getElementById('view'),gl=null,shader=null,staticMesh=null,dynamicMesh=null,radarMesh=null,eye=[0,3,12],look=[0,1,0];
+var canvas=document.getElementById('view'),gl=null,shader=null,staticMesh=null,dynamicMesh=null,radarMesh=null,reachMesh=null,eye=[0,3,12],look=[0,1,0];
 var upload,draw,projection,viewmatrix,mul,resize;try{gl=canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:false})||canvas.getContext('experimental-webgl');if(!gl)throw Error('WebGL not available in this browser. Enable WebGL in Safari settings.');
 window.__hunter.webgl=true;
 function compile(type,src){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
@@ -122,7 +140,7 @@ var fs='precision mediump float;varying vec3 vColor;varying float vFog;uniform f
 shader=gl.createProgram();gl.attachShader(shader,compile(gl.VERTEX_SHADER,vs));gl.attachShader(shader,compile(gl.FRAGMENT_SHADER,fs));gl.linkProgram(shader);if(!gl.getProgramParameter(shader,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(shader));gl.useProgram(shader);
 var loc={pos:gl.getAttribLocation(shader,'aPos'),nor:gl.getAttribLocation(shader,'aNormal'),col:gl.getAttribLocation(shader,'aColor'),vp:gl.getUniformLocation(shader,'uVP'),sun:gl.getUniformLocation(shader,'uSun'),alpha:gl.getUniformLocation(shader,'uAlpha')};gl.uniform3f(loc.sun,-.5,.9,.4);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);gl.clearColor(.70,.81,.75,1);
 function mesh(dynamic){return{buffer:gl.createBuffer(),count:0,usage:dynamic?gl.DYNAMIC_DRAW:gl.STATIC_DRAW};}
-staticMesh=mesh(false);dynamicMesh=mesh(true);radarMesh=mesh(true);
+staticMesh=mesh(false);dynamicMesh=mesh(true);radarMesh=mesh(true);reachMesh=mesh(true);
 upload=function(m,g){gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(g.v),m.usage);m.count=g.count;}
 draw=function(m,alpha){if(!m.count)return;gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);var stride=36;gl.enableVertexAttribArray(loc.pos);gl.enableVertexAttribArray(loc.nor);gl.enableVertexAttribArray(loc.col);gl.vertexAttribPointer(loc.pos,3,gl.FLOAT,false,stride,0);gl.vertexAttribPointer(loc.nor,3,gl.FLOAT,false,stride,12);gl.vertexAttribPointer(loc.col,3,gl.FLOAT,false,stride,24);gl.uniform1f(loc.alpha,alpha);gl.drawArrays(gl.TRIANGLES,0,m.count);}
 projection=function(fov,aspect,near,far){var f=1/Math.tan(fov*.5),nf=1/(near-far);return[f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0];}
@@ -160,7 +178,7 @@ g.clayBlob(NEST.x,NEST.y-.05,NEST.z,.52,.17,.46,C.wood2,0,6,9);for(var i=0;i<7;i
 // Rat food (voxel seeds and berries)
 for(var i=0;i<13;i++){var a=hash(i,2,4)*TAU,dd=hash(i,3,5)*1.2,x=FOOD.x+Math.cos(a)*dd,z=FOOD.z+Math.sin(a)*dd;g.box(x,h(x,z)+.08,z,.12,.12,.13,i%4===0?C.flower:C.ground);}
 // Ground flora: voxel grass tufts and small yellow flowers; limit center density for view.
-for(var i=0;i<950;i++){var x=(hash(i,4,57)-.5)*42,z=(hash(i,3,58)-.5)*42;var y=h(x,z),size=.12+hash(i,8,8)*.26;var col=i%5===0?C.leaf3:C.leaf2;if(hash(i,6,5)<.09){g.clayTrunk(x,y+.02,z,.042,.29,C.leaf);g.clayBlob(x,y+.35,z,.10,.10,.12,C.flower,0,5,8);}else{g.clayBlob(x,y+size*.55,z,.047,size*.65,.07,col,hash(i,7,4)*2,5,7);if(i%3===0)g.clayBlob(x+.12,y+size*.4,z,.045,size*.48,.055,C.leaf,0,5,7);}}
+for(var i=0;i<800;i++){var x=(hash(i,4,57)-.5)*42,z=(hash(i,3,58)-.5)*42;var y=h(x,z),size=.12+hash(i,8,8)*.26;var col=i%5===0?C.leaf3:C.leaf2;if(hash(i,6,5)<.09){g.clayTrunk(x,y+.02,z,.042,.29,C.leaf);g.clayBlob(x,y+.35,z,.09,.09,.11,C.flower,0,4,6);}else{g.clayBlade(x,y,z,size,col,hash(i,7,4)*6.28);if(i%3===0)g.clayBlade(x+.12,y,z,size*.74,C.leaf,hash(i,5,8)*6.28);}}
 // Bushes are usable cover; visible leafy voxel clusters.
 function shrub(x,z,r,i){var y=h(x,z);g.clayBlob(x,y+.53,z,r*.86,.65,r*.85,C.leaf2,0,7,10);
  for(var k=0;k<5;k++){var a=k*TAU/5+.35;g.clayBlob(x+Math.cos(a)*r*.47,y+.53+(k%2)*.10,z+Math.sin(a)*r*.47,r*.46,.42,r*.47,[C.leaf,C.leaf2,C.leaf3][k%3],0,6,9);}
@@ -195,41 +213,56 @@ function drawnBody(d){var p=bodyAt(d),st=snake.strike;if(!st)return p;
  return p;}
 function headModel(v){
  var p=headPosition(),yaw=snake.strike?snake.strike.yaw:snake.focus?snake.aimYaw:snake.heading,
+ pitch=snake.strike?snake.strike.pitch:snake.focus?snake.aimPitch:0,
  fx=Math.sin(yaw),fz=Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw),
  mouth=snake.swallow?(.16+Math.sin(snake.swallow.t*8)*.08):snake.strike?(.16+.14*Math.sin(Math.PI*clamp(snake.strike.t/.66,0,1))):0;
- // Sculpted tapered skull, brow and snout; no rectangular side blocks.
- v.clayBlob(p.x,p.y+.025,p.z,.255,.182,.32,C.snake,yaw,8,12);
- v.clayBlob(p.x+fx*.235,p.y-.035,p.z+fz*.235,.191,.116,.207,C.snake,yaw,7,12);
- v.clayBlob(p.x+fx*.24,p.y-.148-mouth*.6,p.z+fz*.24,.190,.060,.218,C.belly,yaw,5,11);
- v.clayBlob(p.x+fx*.402,p.y-.075,p.z+fz*.402,.054,.032,.065,C.nose,yaw,5,8);
+ var ca=Math.cos(pitch),sa=Math.sin(pitch);
+ function at(right,above,forward){return {x:p.x+rx*right+fx*(-above*sa+forward*ca),y:p.y+above*ca+forward*sa,z:p.z+rz*right+fz*(-above*sa+forward*ca)};}
+ function blob(q,sx,sy,sz,col,ring,side){v.clayBlob(q.x,q.y,q.z,sx,sy,sz,col,yaw,ring,side,pitch);}
+ // Rounded, pitch-aware cranium, snout, articulated lower jaw, nostrils and flush-set eyes.
+ blob(at(0,.025,0),.243,.165,.29,C.snake,8,12);
+ blob(at(0,-.035,.233),.182,.114,.206,C.snake,8,12);
+ blob(at(0,-.145-mouth*.62,.230),.178,.058,.213,C.belly,6,11);
+ blob(at(0,-.073,.407),.050,.029,.063,C.nose,5,9);
  for(var side of [-1,1]){
-   var ex=p.x+rx*side*.191+fx*.105,ez=p.z+rz*side*.191+fz*.105;
-   v.clayBlob(ex,p.y+.115,ez,.062,.067,.067,C.snakeBack,yaw,6,9);
-   v.clayBlob(ex+rx*side*.013,p.y+.13,ez+rz*side*.013,.034,.039,.035,C.dark,yaw,6,9);
-   v.clayBlob(ex+fx*.012,p.y+.142,ez+fz*.012,.011,.013,.014,C.flower,yaw,4,6);
+  var ey=at(side*.18,.111,.175);
+  blob(ey,.042,.035,.046,C.snakeBack,6,9);
+  var pupil=at(side*.202,.126,.183);blob(pupil,.025,.026,.029,C.dark,6,9);
+  var gleam=at(side*.209,.141,.195);blob(gleam,.010,.010,.011,C.flower,4,7);
  }
- // Unified continuous cobra hood: broad rounded crest transitioning into the neck.
- var hood=clamp(snake.headLift*.82+snake.coil*.24,0,1);
- if(hood>.08){var back=drawnBody(.33),wid=.25+.38*hood,low=drawnBody(.67);
-  var rows=[{p:low,width:.12,up:0},{p:back,width:wid*.83,up:.03},{p:p,width:wid,up:.015},{p:{x:p.x+fx*.055,y:p.y-.095,z:p.z+fz*.055},width:.19,up:0}];
-  for(var j=0;j<rows.length-1;j++)for(var k=0;k<8;k++){
-   function pt(row,t,depth){var curve=Math.sqrt(Math.max(0,1-t*t));return [row.p.x+rx*t*row.width-fx*(.12+curve*.09+depth),row.p.y+row.up,zval(row.p.z+rz*t*row.width-fz*(.12+curve*.09+depth))];}
-   // local sculpted hood front & back, continuous membrane between its edges
-   var t0=-1+2*k/8,t1=-1+2*(k+1)/8;
-   var A=pt(rows[j],t0,0),B=pt(rows[j],t1,0),D=pt(rows[j+1],t0,0),E=pt(rows[j+1],t1,0);
-   v.quad(A,B,E,D,[fx*.72,.28,fz*.72],k===1||k===6?C.snakeBack:C.belly);
-   if(k===0||k===7){var AA=pt(rows[j],t0,.055),BB=pt(rows[j],t1,.055),DD=pt(rows[j+1],t0,.055),EE=pt(rows[j+1],t1,.055);v.quad(DD,EE,BB,AA,[-fx,.10,-fz],C.snakeBack);}
+ // Sculpted continuous hood, double-faced so it is broad and solid from the rear camera.
+ var hood=clamp(snake.headLift*.89+snake.coil*.23,0,1);
+ if(hood>.08){
+  var rows=[
+   {p:drawnBody(.88),width:.125,up:0},
+   {p:drawnBody(.64),width:.16+.12*hood,up:0},
+   {p:drawnBody(.43),width:.18+.27*hood,up:.012},
+   {p:drawnBody(.21),width:.20+.37*hood,up:.025},
+   {p:drawnBody(.02),width:.23+.08*hood,up:-.014}
+  ];
+  function hoodPt(row,t){var curve=1-t*t;
+   return [row.p.x+rx*t*row.width-fx*(.035+curve*.07),row.p.y+row.up-.045*Math.abs(t),row.p.z+rz*t*row.width-fz*(.035+curve*.07)];}
+  for(var j=0;j<rows.length-1;j++)for(var k=0;k<10;k++){
+   var t0=-1+2*k/10,t1=-1+2*(k+1)/10;
+   var A=hoodPt(rows[j],t0),B=hoodPt(rows[j],t1),D=hoodPt(rows[j+1],t0),E=hoodPt(rows[j+1],t1);
+   v.quad(A,B,E,D,[fx*.6,.18,fz*.6],C.belly);
+   v.quad(D,E,B,A,[-fx*.65,.14,-fz*.65],j===0?C.snake:C.snakeBack);
   }
-  // Classic hood ovals integrated into a continuous shape.
-  for(var side of [-1,1]){var r=rows[1],xx=r.p.x+rx*side*wid*.56-fx*.21,zz=r.p.z+rz*side*wid*.56-fz*.21;
-    v.clayBlob(xx,r.p.y+.026,zz,.070,.075,.027,C.snakeBack,yaw,5,8);
-    v.clayBlob(xx,r.p.y+.031,zz,.039,.043,.028,C.belly,yaw,5,8);
+  // One soft border follows each side of the hood instead of a pair of block-like flaps.
+  for(var side of [-1,1]){
+   for(var j=0;j<rows.length-1;j++){
+    var A=hoodPt(rows[j],side),B=hoodPt(rows[j+1],side);
+    v.clayLink({x:A[0],y:A[1],z:A[2]},{x:B[0],y:B[1],z:B[2]},.045,C.snake);
+   }
+   // Rear hood markings, viewed from behind during Focus.
+   var rr=rows[2],cx=rr.p.x+rx*side*rr.width*.52-fx*.13,cz=rr.p.z+rz*side*rr.width*.52-fz*.13;
+   v.clayBlob(cx,rr.p.y+.14,cz,.052,.070,.026,C.belly,yaw,4,7);
   }
  }
  if(snake.swallow){var sw=snake.swallow,t=sw.t,progress=clamp((t-.35)/1.48,0,1);
-  if(progress<.94){var px=p.x+fx*(.43-progress*.46),py=p.y-.13-mouth*.3,pz=p.z+fz*(.43-progress*.46),sc=(1-progress)*.85+.15;
-   v.clayBlob(px,py,pz,.22*sc,.17*sc,.28*sc,sw.type==='egg'?C.flower:sw.type==='bird'?C.leaf3:C.rat,yaw,6,10);
-   if(sw.type==='rat')v.clayBlob(px-fx*.23,py,pz-fz*.23,.055*sc,.045*sc,.21*sc,C.ear,yaw,5,8);
+  if(progress<.94){var prey=at(0,-.13-mouth*.3,.43-progress*.46),px=prey.x,py=prey.y,pz=prey.z,sc=(1-progress)*.85+.15;
+   v.clayBlob(px,py,pz,.22*sc,.17*sc,.28*sc,sw.type==='egg'?C.flower:sw.type==='bird'?C.leaf3:C.rat,yaw,6,10,pitch);
+   if(sw.type==='rat')v.clayBlob(px-fx*.23*ca,py-.23*sa,pz-fz*.23*ca,.055*sc,.045*sc,.21*sc,C.ear,yaw,5,8,pitch);
   }
   var bulge=Math.sin(Math.PI*clamp((t-1)/1.4,0,1));if(bulge>0){var np=drawnBody(Math.min(snake.length*.72,.65+(t-1)*.35));v.clayBlob(np.x,np.y,np.z,.18+bulge*.20,.19+bulge*.17,.23+bulge*.19,C.snake,yaw,7,10);}
  }
@@ -332,13 +365,14 @@ window.hunterStrike=function(){
  cooldown=.78;say('LUNGE!',.7);
 };
 function buildReach(v){
+ var reachLabel=document.getElementById('reachHint');if(reachLabel&&!snake.focus)reachLabel.style.display='none';
  if(!snake.focus&&! (snake.headLift>.60&&!snake.climb))return;
  var o=bodyAt(0),yaw=snake.focus?snake.aimYaw:snake.heading,steps=22,r=MAX_REACH;
  // arc showing cobra's horizontal range; subdued in idle and clear in Focus
  for(var i=0;i<steps;i++){var a=yaw-.92+i*1.84/steps,b=yaw-.92+(i+1)*1.84/steps;
   var x1=o.x+Math.sin(a)*r,z1=o.z+Math.cos(a)*r,x2=o.x+Math.sin(b)*r,z2=o.z+Math.cos(b)*r;
   var ya=h(x1,z1)+.14,yb=h(x2,z2)+.14;
-  v.quad([x1,ya,z1],[x2,yb,z2],[x2+.022,yb,z2+.022],[x1+.022,ya,z1+.022],[0,1,0],C.amber);
+  v.quad([x1,ya,z1],[x2,yb,z2],[x2+.065,yb,z2+.065],[x1+.065,ya,z1+.065],[0,1,0],C.amber);
  }
  if(!snake.focus)return;
  var point=aimImpact(),p={x:point.x,y:point.intersects?h(point.x,point.z)+.16:point.y,z:point.z},rad=.19;
@@ -347,9 +381,10 @@ function buildReach(v){
   v.quad([p.x+Math.cos(a)*rad,p.y,p.z+Math.sin(a)*rad],[p.x+Math.cos(b)*rad,p.y,p.z+Math.sin(b)*rad],[p.x+Math.cos(b)*(rad+.032),p.y,p.z+Math.sin(b)*(rad+.032)],[p.x+Math.cos(a)*(rad+.032),p.y,p.z+Math.sin(a)*(rad+.032)],[0,1,0],C.amber);
  }
  window.__hunter.aimImpact={x:+p.x.toFixed(2),y:+p.y.toFixed(2),z:+p.z.toFixed(2),ground:point.intersects};
+ var label=document.getElementById('reachHint');if(label){label.style.display='block';label.textContent='STRIKE · '+point.dist.toFixed(1)+'m '+(point.intersects?'· GROUND':'· AIR / ELEVATED');}
 }
 function capturePrey(type){snake.strike.hit=true;snake.strike=null;snake.swallow={type:type,t:0};snake.cinematic={t:0,type:type};document.getElementById('game').classList.add('cinematic');snake.caught++;snake.length+=type==='egg'?.16:type==='bird'?.37:.31;document.getElementById('caught').textContent=snake.caught;document.getElementById('length').textContent=snake.length.toFixed(1)+'m';if(type==='rat'){rat.gone=true;rat.respawn=simTime+7;}else if(type==='egg'){NEST.eggs=Math.max(0,NEST.eggs-1);}else{bird.state='gone';bird.respawn=simTime+15;}say('CAPTURE! Watch the swallowing cinematic',2.3);}
-function checkLunge(){if(!snake.strike)return;var curr=headPosition(),prev=snake.strike.prev||curr;for(var type of ['rat','bird','egg']){if(type==='rat'&&(rat.gone||rat.state==='burrow')||type==='bird'&&bird.state!=='perch'||type==='egg'&&NEST.eggs<1)continue;var p=attackTargetPosition(type),r=type==='egg'?.37:type==='bird'?.48:.43;if(pointSegmentDistance(p,prev,curr)<r){capturePrey(type);return;}}snake.strike.prev=curr;}
+function checkLunge(){if(!snake.strike)return;var curr=headPosition(),prev=snake.strike.prev||curr;if(snake.strike.t>.355){snake.strike.prev=curr;return;}for(var type of ['rat','bird','egg']){if(type==='rat'&&(rat.gone||rat.state==='burrow')||type==='bird'&&bird.state!=='perch'||type==='egg'&&NEST.eggs<1)continue;var p=attackTargetPosition(type),r=type==='egg'?.37:type==='bird'?.48:.43;if(pointSegmentDistance(p,prev,curr)<r){capturePrey(type);return;}}snake.strike.prev=curr;}
 var stick=document.getElementById('stick'),nub=document.getElementById('nub'),joyId=null;
 function steer(e){var r=stick.getBoundingClientRect(),m=Math.min(r.width,r.height)*.33,x=(e.clientX-r.left-r.width/2)/m,y=(e.clientY-r.top-r.height/2)/m,len=Math.max(1,Math.hypot(x,y));joystick.x=x/len;joystick.y=y/len;nub.style.transform='translate('+(joystick.x*m)+'px,'+(joystick.y*m)+'px)';}
 function stopJoy(){joyId=null;joystick.x=joystick.y=0;nub.style.transform='translate(0px,0px)';}
@@ -373,11 +408,12 @@ function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0
 function render(t){try{requestAnimationFrame(render);var dt=Math.min(.045,Math.max(0,(t-lastT)/1000));lastT=t;if(playing){acc+=dt;var steps=0;while(acc>=1/60&&steps++<4){update(1/60);acc-=1/60;}}
  var head=headPosition(),f=aimVector(),wanted,target;
  if(snake.cinematic){var side=[Math.cos(snake.aimYaw),-Math.sin(snake.aimYaw)];wanted=[head.x+side[0]*1.95-f.x*.55,head.y+.82,head.z+side[1]*1.95-f.z*.55];target=[head.x,head.y,head.z];}
- else if(snake.focus){var cameraYaw=snake.aimYaw;wanted=[head.x-Math.sin(cameraYaw)*2.48,head.y+.62,head.z-Math.cos(cameraYaw)*2.48];target=[head.x+f.x*3.7,head.y+f.y*3.7-.12,head.z+f.z*3.7];}
+ else if(snake.focus){var cameraYaw=snake.aimYaw; var portrait=heightPx>width*1.28,dist=portrait?4.15:2.70,above=portrait?1.47:.87;
+ wanted=[head.x-Math.sin(cameraYaw)*dist,head.y+above,head.z-Math.cos(cameraYaw)*dist];target=[head.x+f.x*3.7,head.y+f.y*3.7-.12,head.z+f.z*3.7];}
  else if(snake.climb){wanted=[head.x-f.x*3.5,head.y+1.65,head.z-f.z*3.5];target=[head.x,head.y+.4,head.z];}
  else{wanted=[snake.x-f.x*4.2,h(snake.x,snake.z)+2.68,snake.z-f.z*4.2];target=[head.x+f.x*2.5,head.y+.12,head.z+f.z*2.5];}
  var follow=1-Math.exp(-dt*(snake.cinematic?6:snake.focus?5.5:4.2));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
- var vp=mul(projection(snake.focus?1.05:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
+ var vp=mul(projection(snake.focus?1.05:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);upload(radarMesh,d);d=new Geometry();buildReach(d);upload(reachMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);draw(reachMesh,.76);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.staticVertices=staticMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
 // Initial render frame and intro: the scene is visible behind the start panel.
 eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='0.8-dev';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
 };
