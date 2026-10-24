@@ -80,7 +80,7 @@ Geometry.prototype.clayBlob=function(x,y,z,sx,sy,sz,col,yaw,rings,sides){
    var A=v(lat0,a),B=v(lat0,b),D=v(lat1,a),E=v(lat1,b);
    var nx=(A[0]+B[0]+D[0]+E[0])/4-x,ny=(A[1]+B[1]+D[1]+E[1])/4-y,nz=(A[2]+B[2]+D[2]+E[2])/4-z;
    var L=Math.hypot(nx,ny,nz)||1,n=[nx/L,ny/L,nz/L];
-   this.quad(A,B,E,D,n,col);
+   this.quad(D,E,B,A,n,col);
  }}
 };
 Geometry.prototype.clayLink=function(a,b,r,col){
@@ -199,12 +199,12 @@ function coilPoint(d){var sn=snake,baseY=h(sn.x,sn.z),dir=[Math.sin(sn.heading),
  if(sn.climb){var support=sn.climb.surface;
    if(d<.8){var t=d/.8;return{x:sn.x-dir[0]*t*.31,y:sn.y+.64*(1-t)*(1-t),z:sn.z-dir[1]*t*.31};}
    if(support.type==='branch'||support.type==='log'){var q=d-.8;return{x:sn.x-Math.min(q,1.85)*dir[0]*.76,y:sn.y+.08+Math.sin(q*5.3)*.13,z:sn.z-Math.min(q,1.85)*dir[1]*.76+Math.sin(q*4)*.21};}
-   var theta=sn.climb.ang+(d-.8)*2.9,rad=support.type==='wall'?.16:support.r+.38;
+   var theta=sn.climb.ang+(d-.8)*2.9,rad=support.type==='wall'?.16:support.r+.165;
    return support.type==='wall'?{x:sn.x-.15,y:sn.y-(d-.8)*.21,z:sn.z+Math.sin(theta)*.38}:{x:support.x+Math.cos(theta)*rad,y:sn.y-(d-.8)*.28,z:support.z+Math.sin(theta)*rad};
  }
  if(d<.83){var t=d/.83,angle=sn.heading+Math.PI,neckX=lerp(sn.x,cx,t),neckZ=lerp(sn.z,cz,t);return{x:neckX+Math.sin(angle)*Math.sin(t*Math.PI)*.08,y:baseY+.22+(1-t)*(1-t)*1.04,z:neckZ+Math.cos(angle)*Math.sin(t*Math.PI)*.08};}
  var f=(d-.83)/Math.max(.55,sn.length-.83),ang=sn.heading+Math.PI*.3+(d-.83)*TAU/1.03,r=.15+Math.sqrt(f)*(.45+sn.length*.065);return{x:cx+Math.cos(ang)*r,y:baseY+.21+Math.floor((d-.83)/1.03)*.05,z:cz+Math.sin(ang)*r};}
-function bodyAt(d){var p=pathAt(d),raise=Math.max(0,1-d/1.05),cp=coilPoint(d),f=snake.coil;var x=lerp(p.x,cp.x,f),z=lerp(p.z,cp.z,f),y=lerp(p.y+snake.headLift*raise*raise,cp.y,f);if(!snake.climb&&f<.9)y=Math.max(y,h(x,z)+.17);return{x:x,y:y,z:z};}
+function bodyAt(d){var p=pathAt(d),raise=Math.max(0,1-d/1.05),cp=coilPoint(d),f=snake.coil;var x=lerp(p.x,cp.x,f),z=lerp(p.z,cp.z,f),y=lerp(p.y+snake.headLift*raise*raise,cp.y,f);if(!snake.climb&&f<.9)y=h(x,z)+.165+Math.max(0,snake.headLift*raise*raise)*(1-f);return{x:x,y:y,z:z};}
 function strikeProgress(){if(!snake.strike)return 0;var t=snake.strike.t;
  if(t<.08)return 0;if(t<.28){var q=(t-.08)/.20;return q*q*(3-2*q);}
  if(t<.35)return 1;var u=clamp((t-.35)/.31,0,1);return 1-u*u*(3-2*u);}
@@ -241,8 +241,8 @@ function headModel(v){
    // local sculpted hood front & back, continuous membrane between its edges
    var t0=-1+2*k/8,t1=-1+2*(k+1)/8;
    var A=pt(rows[j],t0,0),B=pt(rows[j],t1,0),D=pt(rows[j+1],t0,0),E=pt(rows[j+1],t1,0);
-   v.quad(A,B,E,D,[fx*.72,.28,fz*.72],k===1||k===6?C.snakeBack:C.belly);
-   if(k===0||k===7){var AA=pt(rows[j],t0,.055),BB=pt(rows[j],t1,.055),DD=pt(rows[j+1],t0,.055),EE=pt(rows[j+1],t1,.055);v.quad(DD,EE,BB,AA,[-fx,.10,-fz],C.snakeBack);}
+   v.quad(A,B,E,D,[fx*.72,.28,fz*.72],k===1||k===6?C.snakeBack:C.belly);v.quad(D,E,B,A,[-fx*.72,-.28,-fz*.72],C.snakeBack);
+   if(k===0||k===7){var AA=pt(rows[j],t0,.055),BB=pt(rows[j],t1,.055),DD=pt(rows[j+1],t0,.055),EE=pt(rows[j+1],t1,.055);v.quad(DD,EE,BB,AA,[-fx,.10,-fz],C.snakeBack);v.quad(AA,BB,EE,DD,[fx,-.10,fz],C.snakeBack);}
   }
   // Classic hood ovals integrated into a continuous shape.
   for(var side of [-1,1]){var r=rows[1],xx=r.p.x+rx*side*wid*.56-fx*.21,zz=r.p.z+rz*side*wid*.56-fz*.21;
@@ -365,7 +365,7 @@ window.hunterStrike=function(){
  cooldown=.78;say('LUNGE!',.7);
 };
 function buildReach(v){
- if(!snake.focus&&! (snake.headLift>.60&&!snake.climb))return;
+ if(snake.focus)return;if(!(snake.headLift>.60&&!snake.climb))return;
  var o=bodyAt(0),yaw=snake.focus?snake.aimYaw:snake.heading,steps=22,r=MAX_REACH;
  // arc showing cobra's horizontal range; subdued in idle and clear in Focus
  for(var i=0;i<steps;i++){var a=yaw-.92+i*1.84/steps,b=yaw-.92+(i+1)*1.84/steps;
@@ -397,12 +397,12 @@ function updateSnake(dt){var forward=clamp(-joystick.y+(keys.KeyW||keys.ArrowUp?
   var c=snake.climb,src=c.surface,old={x:snake.x,y:snake.y,z:snake.z},velocity=(sneaking?.55:1.32)*dt;
   if(src.type==='branch'){
    c.branchT=clamp(c.branchT+forward*velocity/Math.max(.1,Math.hypot(src.b.x-src.a.x,src.b.y-src.a.y,src.b.z-src.a.z)),0,1);
-   var t=c.branchT;snake.x=lerp(src.a.x,src.b.x,t);snake.y=lerp(src.a.y,src.b.y,t)+src.r+.22;snake.z=lerp(src.a.z,src.b.z,t);
+   var t=c.branchT;snake.x=lerp(src.a.x,src.b.x,t);snake.y=lerp(src.a.y,src.b.y,t)+src.r+.155;snake.z=lerp(src.a.z,src.b.z,t);
    snake.heading=Math.atan2(src.b.x-src.a.x,src.b.z-src.a.z)+turn*.15;
    if(t<.025&&forward<-.05){var tree=src.parent;c.surface=tree;c.alt=src.a.y-h(tree.x,tree.z);c.ang=Math.atan2(snake.z-tree.z,snake.x-tree.x);}
   }else if(src.type==='tree'){
    c.alt=clamp(c.alt+forward*velocity,.24,src.height-.12);c.ang+=turn*dt*1.75;
-   var rr=src.r+.30;snake.x=src.x+Math.cos(c.ang)*rr;snake.z=src.z+Math.sin(c.ang)*rr;snake.y=h(src.x,src.z)+c.alt;
+   var rr=src.r+.165;snake.x=src.x+Math.cos(c.ang)*rr;snake.z=src.z+Math.sin(c.ang)*rr;snake.y=h(src.x,src.z)+c.alt;
    snake.heading=c.ang+Math.PI*.5;
    var branch=closestBranch(src,c.alt,c.ang);
    if(branch&&forward>.15&&Math.abs(c.alt-(branch.a.y-h(src.x,src.z)))<.38){c.surface=branch;c.branchT=0;}
@@ -422,18 +422,18 @@ function updateSnake(dt){var forward=clamp(-joystick.y+(keys.KeyW||keys.ArrowUp?
  for(var i=0;i<solid.length;i++){var o=solid[i],dx=nx-o.x,dz=nz-o.z,dd=Math.hypot(dx,dz),min=o.r+.28;if(dd<min){nx=o.x+dx/(dd||1)*min;nz=o.z+dz/(dd||1)*min;}}
  snake.x=nx;snake.z=nz;snake.y=h(nx,nz)+.24;snake.aimYaw=snake.heading;snake.aimPitch=0;recordTrail(old);snake.headLift=lerp(snake.headLift,Math.abs(snake.speed)<.10&&!sneaking?.89:0,Math.min(1,dt*3.8));}
 function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0){noticeTime-=dt;if(noticeTime<=0)document.getElementById('info').classList.remove('show');}updateSnake(dt);updateRat(dt);updateBird(dt);var p=rat.awareness*100;document.getElementById('meterfill').style.width=p.toFixed(0)+'%';document.getElementById('meterfill').style.background=p>80?'#e96d5f':p>35?'#f4c75d':'#81cd86';document.getElementById('ratState').textContent=rat.state==='burrow'?'IN BURROW':rat.state==='flee'?'FLEEING':p>80?'ALARMED':p>35?'SUSPICIOUS':'CALM';document.getElementById('stance').textContent=snake.swallow?'FEEDING':snake.strike?'LUNGING':snake.focus?'FOCUS · TORCH AIM':snake.climb?'SURFACE · '+snake.climb.surface.type.toUpperCase():snake.headLift>.5?'COBRA READY':'SLITHER';}
-(function(){var b=document.createElement('button');b.textContent='CAMERA';b.setAttribute('aria-label','Change camera perspective');b.style.cssText='position:fixed;top:76px;right:12px;z-index:1000;padding:10px 12px;border-radius:12px;background:#244936dd;color:white;border:1px solid #d8edbf;font-weight:bold';b.onclick=function(){window.hunterCamera();};document.body.appendChild(b);})();window.__hunter.cameraMode='follow';window.hunterCamera=function(){var modes=['follow','wide','top','side'],idx=modes.indexOf(window.__hunter.cameraMode);window.__hunter.cameraMode=modes[(idx+1)%modes.length];say('CAMERA: '+window.__hunter.cameraMode.toUpperCase(),1.4);};document.addEventListener('keydown',function(e){if(e.code==='KeyV'&&!e.repeat)window.hunterCamera();});function render(t){try{requestAnimationFrame(render);var dt=Math.min(.045,Math.max(0,(t-lastT)/1000));lastT=t;if(playing){acc+=dt;var steps=0;while(acc>=1/60&&steps++<4){update(1/60);acc-=1/60;}}
- var head=headPosition(),f=aimVector(),wanted,target;var camMode=window.__hunter.cameraMode||'follow';
+(function(){var b=document.createElement('button');b.textContent='CAMERA';b.setAttribute('aria-label','Change camera perspective');b.style.cssText='position:fixed;top:76px;right:12px;z-index:1000;padding:10px 12px;border-radius:12px;background:#244936dd;color:white;border:1px solid #d8edbf;font-weight:bold';b.onclick=function(){window.hunterCamera();};document.body.appendChild(b);})();window.__hunter.cameraMode='follow';window.hunterCamera=function(){var modes=['follow','wide','top','side'],idx=modes.indexOf(window.__hunter.cameraMode);window.__hunter.cameraMode=modes[(idx+1)%modes.length];say('CAMERA: '+window.__hunter.cameraMode.toUpperCase(),1.4);};document.addEventListener('keydown',function(e){if(e.code==='KeyV'&&!e.repeat)window.hunterCamera();});(function(){var r=document.createElement('div');r.id='focusSight';r.style.cssText='pointer-events:none;position:fixed;left:50%;top:50%;width:54px;height:54px;transform:translate(-50%,-50%);border:2px solid #f9e3a1;border-radius:50%;box-shadow:0 0 0 1px #334c38,0 0 12px #f9e3a180;z-index:200;display:none';r.innerHTML='<div style="position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#fff1bb;transform:translate(-50%,-50%)"></div>';document.body.appendChild(r);})();function render(t){try{requestAnimationFrame(render);var dt=Math.min(.045,Math.max(0,(t-lastT)/1000));lastT=t;if(playing){acc+=dt;var steps=0;while(acc>=1/60&&steps++<4){update(1/60);acc-=1/60;}}
+ document.getElementById('focusSight').style.display=snake.focus&&!snake.cinematic?'block':'none';var head=headPosition(),f=aimVector(),wanted,target;var camMode=window.__hunter.cameraMode||'follow';
  if(snake.cinematic){var side=[Math.cos(snake.aimYaw),-Math.sin(snake.aimYaw)];wanted=[head.x+side[0]*1.95-f.x*.55,head.y+.82,head.z+side[1]*1.95-f.z*.55];target=[head.x,head.y,head.z];}
- else if(snake.focus){var cameraYaw=snake.aimYaw;wanted=[head.x-Math.sin(cameraYaw)*2.48,head.y+.62,head.z-Math.cos(cameraYaw)*2.48];target=[head.x+f.x*3.7,head.y+f.y*3.7-.12,head.z+f.z*3.7];}
+ else if(snake.focus){wanted=[head.x+f.x*.36,head.y+.10,head.z+f.z*.36];target=[wanted[0]+f.x*6,wanted[1]+f.y*6,wanted[2]+f.z*6];}
  else if(snake.climb){wanted=[head.x-f.x*2.65,head.y+1.05,head.z-f.z*2.65];target=[head.x,head.y+.4,head.z];}
  else{wanted=[snake.x-f.x*3.05,h(snake.x,snake.z)+1.95,snake.z-f.z*3.05];target=[head.x+f.x*2.5,head.y+.12,head.z+f.z*2.5];}
  // Keep camera on the cobra side of opaque trunks instead of looking through them.
  for(var obstacle of climbables){if(obstacle.type!=="tree")continue;var dx=wanted[0]-head.x,dz=wanted[2]-head.z,den=dx*dx+dz*dz||1,t=clamp(((obstacle.x-head.x)*dx+(obstacle.z-head.z)*dz)/den,0,1);if(t>.08&&t<.96&&Math.hypot(head.x+dx*t-obstacle.x,head.z+dz*t-obstacle.z)<obstacle.r+.35){var safe=Math.max(.3,t-.12);wanted[0]=lerp(head.x,wanted[0],safe);wanted[2]=lerp(head.z,wanted[2],safe);break;}}
- if(!snake.cinematic&&!snake.focus){if(camMode==='wide'){wanted[0]=snake.x-f.x*6;wanted[1]=head.y+3.2;wanted[2]=snake.z-f.z*6;}else if(camMode==='top'){wanted=[head.x+0.01,head.y+8.5,head.z+1.3];target=[head.x,head.y,head.z];}else if(camMode==='side'){wanted=[head.x+Math.cos(snake.heading)*4.4,head.y+1.9,head.z-Math.sin(snake.heading)*4.4];target=[head.x,head.y,head.z];}}var follow=1-Math.exp(-dt*(snake.cinematic?6:snake.focus?5.5:4.2));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
- var vp=mul(projection(snake.focus?1.05:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
+ if(!snake.cinematic&&!snake.focus){if(camMode==='wide'){wanted[0]=snake.x-f.x*6;wanted[1]=head.y+3.2;wanted[2]=snake.z-f.z*6;}else if(camMode==='top'){wanted=[head.x+0.01,head.y+8.5,head.z+1.3];target=[head.x,head.y,head.z];}else if(camMode==='side'){wanted=[head.x+Math.cos(snake.heading)*4.4,head.y+1.9,head.z-Math.sin(snake.heading)*4.4];target=[head.x,head.y,head.z];}}var follow=snake.focus?1:1-Math.exp(-dt*(snake.cinematic?6:4.2));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
+ var vp=mul(projection(snake.focus?1.25:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
 // Initial render frame and intro: the scene is visible behind the start panel.
-eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='0.9-dev';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
+eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.0.1-eye-and-surface';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
 };
 // Lightweight startup — no rendering, terrain generation or WebGL context creation until Start Hunt is pressed.
 window.__hunter.bootstrapped=true;document.getElementById('bootStatus').textContent='Ready. Tap START HUNT to load the offline 3D world.';
