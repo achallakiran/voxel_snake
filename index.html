@@ -80,7 +80,7 @@ Geometry.prototype.clayBlob=function(x,y,z,sx,sy,sz,col,yaw,rings,sides){
    var A=v(lat0,a),B=v(lat0,b),D=v(lat1,a),E=v(lat1,b);
    var nx=(A[0]+B[0]+D[0]+E[0])/4-x,ny=(A[1]+B[1]+D[1]+E[1])/4-y,nz=(A[2]+B[2]+D[2]+E[2])/4-z;
    var L=Math.hypot(nx,ny,nz)||1,n=[nx/L,ny/L,nz/L];
-   this.quad(D,E,B,A,n,col);
+   this.quad(D,E,B,A,n,col);this.quad(A,B,E,D,n.map(v=>-v),col);
  }}
 };
 Geometry.prototype.clayLink=function(a,b,r,col){
@@ -206,7 +206,7 @@ function coilPoint(d){var sn=snake,baseY=h(sn.x,sn.z),dir=[Math.sin(sn.heading),
  }
  if(d<.83){var t=d/.83,angle=sn.heading+Math.PI,neckX=lerp(sn.x,cx,t),neckZ=lerp(sn.z,cz,t);return{x:neckX+Math.sin(angle)*Math.sin(t*Math.PI)*.08,y:baseY+.22+(1-t)*(1-t)*1.04,z:neckZ+Math.cos(angle)*Math.sin(t*Math.PI)*.08};}
  var f=(d-.83)/Math.max(.55,sn.length-.83),ang=sn.heading+Math.PI*.3+(d-.83)*TAU/1.03,r=.15+Math.sqrt(f)*(.45+sn.length*.065);return{x:cx+Math.cos(ang)*r,y:baseY+.21+Math.floor((d-.83)/1.03)*.05,z:cz+Math.sin(ang)*r};}
-function bodyAt(d){var p=pathAt(d),raise=Math.max(0,1-d/1.05),cp=coilPoint(d),f=snake.coil;var x=lerp(p.x,cp.x,f),z=lerp(p.z,cp.z,f),y=lerp(p.y+snake.headLift*raise*raise,cp.y,f);if(!snake.climb&&f<.9)y=h(x,z)+.137+Math.max(0,snake.headLift*raise*raise)*(1-f);return{x:x,y:y,z:z};}
+function bodyAt(d){var p=pathAt(d),raise=Math.max(0,1-d/1.05),cp=coilPoint(d),f=snake.coil;if(snake.climb)f=0;var x=lerp(p.x,cp.x,f),z=lerp(p.z,cp.z,f),y=lerp(p.y+snake.headLift*raise*raise,cp.y,f);if(!snake.climb&&f<.9)y=h(x,z)+.137+Math.max(0,snake.headLift*raise*raise)*(1-f);return{x:x,y:y,z:z};}
 function strikeProgress(){if(!snake.strike)return 0;var t=snake.strike.t;
  if(t<.08)return 0;if(t<.28){var q=(t-.08)/.20;return q*q*(3-2*q);}
  if(t<.35)return 1;var u=clamp((t-.35)/.31,0,1);return 1-u*u*(3-2*u);}
@@ -262,7 +262,7 @@ function headModel(v){
 }
 // Keep z computation explicit in the procedural hood surface.
 function zval(v){return v;}
-function snakeModel(v){var count=Math.min(135,Math.max(25,Math.floor(snake.length/.064)));for(var i=count-1;i>=0;i--){var d=(i+.5)*snake.length/count,p=drawnBody(d),next=drawnBody(Math.max(0,d-.066)),prev=drawnBody(Math.min(snake.length,d+.066));var radius=.137*(.66+.34*(1-d/snake.length));if(d>snake.length*.84)radius*=clamp((snake.length-d)/(.16*snake.length),.24,1);v.clayLink(prev,next,radius,i%5===0?C.snake:C.snakeBack);}headModel(v);}
+function snakeModel(v){var count=Math.min(115,Math.max(25,Math.floor(snake.length/.075)));for(var i=count-1;i>=0;i--){var d=(i+.5)*snake.length/count,p=drawnBody(d),next=drawnBody(Math.max(0,d-.066)),prev=drawnBody(Math.min(snake.length,d+.066));var radius=.137*(.66+.34*(1-d/snake.length));if(d>snake.length*.84)radius*=clamp((snake.length-d)/(.16*snake.length),.24,1);v.clayLink(prev,next,radius,i%5===0?C.snake:C.snakeBack);}headModel(v);}
 function recordTrail(old){var dy=snake.y-old.y,motion=Math.hypot(snake.x-old.x,dy,snake.z-old.z);snake.travel+=motion;if(motion>.001&&snake.travel-snake.trail[0].s>.025){snake.trail.unshift({x:snake.x,y:snake.y,z:snake.z,s:snake.travel});if(snake.trail.length>1100)snake.trail.length=800;}}
 // ----- Voxel rat and live predator awareness simulation -----
 var rat={x:BUR.x,z:BUR.z,heading:0,look:0,age:0,t:0,awareness:0,state:'burrow',gone:false,respawn:0,alertUntil:0};
@@ -399,18 +399,18 @@ function updateSnake(dt){var forward=clamp(-joystick.y+(keys.KeyW||keys.ArrowUp?
  if(snake.focus){snake.speed=lerp(snake.speed,0,Math.min(1,dt*9));snake.coil=lerp(snake.coil,1,Math.min(1,dt*2.8));var smoothing=1-Math.exp(-dt*10);snake.focusTurn=lerp(snake.focusTurn||0,Math.abs(turn)<.10?0:turn,smoothing);snake.focusTilt=lerp(snake.focusTilt||0,Math.abs(forward)<.10?0:forward,smoothing);snake.aimYaw+=snake.focusTurn*dt*.94;snake.aimPitch=clamp(snake.aimPitch+snake.focusTilt*dt*.80,-1.00,.82);snake.headLift=lerp(snake.headLift,.95,Math.min(1,dt*4));return;}
  snake.coil=lerp(snake.coil,0,Math.min(1,dt*3));
  if(snake.climb){
-  var c=snake.climb,src=c.surface,old={x:snake.x,y:snake.y,z:snake.z},velocity=1.10*dt;forward=Math.abs(forward)<.09?0:forward;turn=Math.abs(turn)<.11?0:turn;
+  var c=snake.climb,src=c.surface,old={x:snake.x,y:snake.y,z:snake.z},velocity=1.85*dt;forward=Math.abs(forward)<.09?0:forward;turn=Math.abs(turn)<.11?0:turn;
   if(src.type==='branch'){
    c.branchT=clamp(c.branchT+forward*velocity/Math.max(.1,Math.hypot(src.b.x-src.a.x,src.b.y-src.a.y,src.b.z-src.a.z)),0,1);
    var t=c.branchT,curve=(1-t)*t*4,side=(c.branchSide||0);c.branchSide=lerp(side,clamp(turn,-1,1)*src.r*.68,1-Math.exp(-dt*5));var dx=src.b.x-src.a.x,dz=src.b.z-src.a.z,dl=Math.hypot(dx,dz)||1;snake.x=lerp(src.a.x,src.b.x,t)-dz/dl*c.branchSide*curve;snake.y=lerp(src.a.y,src.b.y,t)+src.r+.14-Math.abs(c.branchSide)*.18*curve;snake.z=lerp(src.a.z,src.b.z,t)+dx/dl*c.branchSide*curve;
-   var desired=Math.atan2(src.b.x-src.a.x,src.b.z-src.a.z)+turn*.26;snake.heading+=normAngle(desired-snake.heading)*(1-Math.exp(-dt*6));
-   if(t<.045&&forward<-.05){var tree=src.parent;c.surface=tree;c.alt=src.a.y-h(tree.x,tree.z);c.ang=Math.atan2(snake.z-tree.z,snake.x-tree.x);}
+   var desired=Math.atan2(src.b.x-src.a.x,src.b.z-src.a.z)+(forward<-.08?Math.PI:0)+turn*.15;snake.heading+=normAngle(desired-snake.heading)*(1-Math.exp(-dt*6));
+   if(t<.035&&forward<-.05){var tree=src.parent;c.surface=tree;c.alt=src.a.y-h(tree.x,tree.z);c.ang=Math.atan2(snake.z-tree.z,snake.x-tree.x);c.turnRate=0;}
   }else if(src.type==='tree'){
    c.alt=clamp(c.alt+forward*velocity,.20,src.height-.12);c.turnRate=lerp(c.turnRate||0,turn*1.40,1-Math.exp(-dt*7));c.ang+=c.turnRate*dt;
    var rr=src.r+.14;snake.x=src.x+Math.cos(c.ang)*rr;snake.z=src.z+Math.sin(c.ang)*rr;snake.y=h(src.x,src.z)+c.alt;
    snake.heading+=normAngle(c.ang+Math.PI*.5-snake.heading)*(1-Math.exp(-dt*7));
    var branch=closestBranch(src,c.alt,c.ang);
-   if(branch&&forward>.55&&Math.abs(c.alt-(branch.a.y-h(src.x,src.z)))<.16){c.surface=branch;c.branchT=0;}
+   if(branch&&forward>.55&&Math.abs(c.alt-(branch.a.y-h(src.x,src.z)))<.12){c.surface=branch;c.branchT=0;c.branchSide=0;}
    if(c.alt<=.30&&forward<-.05){snake.climb=null;snake.y=h(snake.x,snake.z)+.24;}
   }else if(src.type==='log'){
    c.logT=clamp(c.logT+forward*velocity,-1.9,1.9);snake.x=src.x+c.logT*Math.cos(-.45);snake.z=src.z-c.logT*Math.sin(-.45);snake.y=h(snake.x,snake.z)+.95;
@@ -423,9 +423,9 @@ function updateSnake(dt){var forward=clamp(-joystick.y+(keys.KeyW||keys.ArrowUp?
  }
  surfaceContact(forward);
  if(snake.climb)return;
- var maximum=keys.ShiftLeft?.86:2.2,target=maximum*forward;snake.speed=lerp(snake.speed,target,Math.min(1,dt*7));snake.heading+=turn*dt*2.15*(Math.abs(forward)<.05?.55:1);var old={x:snake.x,y:snake.y,z:snake.z};var nx=clamp(snake.x+Math.sin(snake.heading)*snake.speed*dt,-20.5,20.5),nz=clamp(snake.z+Math.cos(snake.heading)*snake.speed*dt,-20.5,20.5);
+ var maximum=keys.ShiftLeft?.86:3.15,target=maximum*forward;snake.speed=lerp(snake.speed,target,1-Math.exp(-dt*5));snake.heading+=turn*dt*2.0*(Math.abs(forward)<.05?.55:1);var old={x:snake.x,y:snake.y,z:snake.z};var nx=clamp(snake.x+Math.sin(snake.heading)*snake.speed*dt,-20.5,20.5),nz=clamp(snake.z+Math.cos(snake.heading)*snake.speed*dt,-20.5,20.5);
  for(var i=0;i<solid.length;i++){var o=solid[i],dx=nx-o.x,dz=nz-o.z,dd=Math.hypot(dx,dz),min=o.r+.28;if(dd<min){nx=o.x+dx/(dd||1)*min;nz=o.z+dz/(dd||1)*min;}}
- snake.x=lerp(snake.x,nx,1-Math.exp(-dt*22));snake.z=lerp(snake.z,nz,1-Math.exp(-dt*22));snake.y=h(snake.x,snake.z)+.24;snake.aimYaw=snake.heading;snake.aimPitch=0;recordTrail(old);snake.headLift=lerp(snake.headLift,Math.abs(snake.speed)<.10?.89:0,Math.min(1,dt*3.8));}
+ snake.x=nx;snake.z=nz;snake.y=h(snake.x,snake.z)+.24;snake.aimYaw=snake.heading;snake.aimPitch=0;recordTrail(old);snake.headLift=lerp(snake.headLift,Math.abs(snake.speed)<.10?.89:0,Math.min(1,dt*3.8));}
 function nearestFood(){var a=[];if(!rat.gone&&rat.state!=='burrow')a.push({name:'rat',x:rat.x,y:h(rat.x,rat.z),z:rat.z});if(NEST.eggs)a.push({name:'eggs',x:NEST.x,y:NEST.y,z:NEST.z});if(bird.state==='perch')a.push({name:'bird',x:bird.x,y:bird.y,z:bird.z});for(var ft of fruit)if(ft.ready)a.push({name:'fruit',x:ft.x,y:ft.y,z:ft.z});a.sort((u,v)=>Math.hypot(u.x-snake.x,u.y-snake.y,u.z-snake.z)-Math.hypot(v.x-snake.x,v.y-snake.y,v.z-snake.z));var p=a[0]||{name:'searching',x:snake.x,y:snake.y,z:snake.z};p.distance=Math.hypot(p.x-snake.x,p.y-snake.y,p.z-snake.z);return p;}
 (function(){var hud=document.createElement('div');hud.id='preyGuide';hud.style.cssText='position:fixed;top:117px;right:12px;z-index:500;background:#1d3b2bc9;border:1px solid #d2e8b0;border-radius:28px;padding:8px 12px;color:#f6f2c8;font:bold 16px system-ui;pointer-events:none';hud.textContent='➤';document.body.appendChild(hud);})();
 function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0){noticeTime-=dt;if(noticeTime<=0)document.getElementById('info').classList.remove('show');}updateSnake(dt);updateRat(dt);updateExtraRats(dt);updateBird(dt);var prey=nearestFood(),angle=Math.atan2(prey.x-snake.x,prey.z-snake.z)-snake.heading;document.getElementById('preyGuide').textContent=(Math.abs(normAngle(angle))<.55?'↑':normAngle(angle)>0?'→':'←')+' '+(prey.name==='fruit'?'●':prey.name==='eggs'?'◉':prey.name==='bird'?'◆':'◈')+' '+prey.distance.toFixed(0)+'m';var p=rat.awareness*100;document.getElementById('meterfill').style.width=p.toFixed(0)+'%';document.getElementById('meterfill').style.background=p>80?'#e96d5f':p>35?'#f4c75d':'#81cd86';document.getElementById('ratState').textContent=rat.state==='burrow'?'IN BURROW':rat.state==='flee'?'FLEEING':p>80?'ALARMED':p>35?'SUSPICIOUS':'CALM';document.getElementById('stance').textContent=snake.swallow?'FEEDING':snake.strike?'LUNGING':snake.focus?'FOCUS · TORCH AIM':snake.climb?'SURFACE · '+snake.climb.surface.type.toUpperCase():snake.headLift>.5?'COBRA READY':'SLITHER';}
@@ -440,7 +440,7 @@ function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0
  var follow=snake.focus?1:1-Math.exp(-dt*(snake.cinematic?6:3.0));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
  var vp=mul(projection(snake.focus?1.25:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);extraRatModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
 // Initial render frame and intro: the scene is visible behind the start panel.
-eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.3-rounded-highlands';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
+eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.4-surface-traverse';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
 };
 // Lightweight startup — no rendering, terrain generation or WebGL context creation until Start Hunt is pressed.
 window.__hunter.bootstrapped=true;document.getElementById('bootStatus').textContent='Ready. Tap START HUNT to load the offline 3D world.';
