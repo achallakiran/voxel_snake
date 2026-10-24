@@ -10,7 +10,7 @@
 .act{width:51px;height:51px;font-size:9px}.act i{font-size:16px}.act.hunt{width:72px;height:72px}.act.focus{background:#265c65d9;border-color:#b3eef0}.act.focus.pressed{background:#4d9b9f}.act.climb{background:#635039d9}
 #settingButton{background:#143b2cef;color:#fff;border:1px solid #f7f4cd43;padding:10px 12px;cursor:pointer;pointer-events:auto;min-height:44px;border-radius:12px}
 #settings{position:absolute;right:12px;top:calc(73px + env(safe-area-inset-top,0px));z-index:13;padding:12px 15px;display:none;min-width:212px;pointer-events:auto}#settings.open{display:block}#settings label{display:flex;gap:10px;align-items:center;font-size:12px}#settings input{width:21px;height:21px;accent-color:#b0da89}#settings p{font-size:10px;color:#c9daba;margin:7px 0 0}
-#reachHint{position:absolute;top:calc(84px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);padding:5px 8px;border-radius:9px;color:#fae7ab;background:#182f25ad;border:1px solid #f5dc8755;font-size:10px;font-weight:650;letter-spacing:.03em;display:none;white-space:nowrap;z-index:5;pointer-events:none}#stance{position:absolute;left:50%;top:calc(61px + env(safe-area-inset-top,0px));transform:translateX(-50%);color:#f8e5a7;font-size:10px;font-weight:800;letter-spacing:.12em;z-index:4;text-shadow:0 2px 5px #0c211c;pointer-events:none;white-space:nowrap}
+#reachHint{position:absolute;top:calc(84px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);padding:5px 8px;border-radius:9px;color:#fae7ab;background:#182f25ad;border:1px solid #f5dc8755;font-size:10px;font-weight:650;letter-spacing:.03em;display:none;white-space:nowrap;z-index:5;pointer-events:none}#aimReticle{position:absolute;z-index:9;width:32px;height:32px;margin-left:-16px;margin-top:-16px;border:2px solid #ffe49a;border-radius:50%;box-shadow:0 0 0 1px #6e502e,0 0 9px #f6cd5c91;pointer-events:none;display:none}#aimReticle:before{content:"";position:absolute;left:13px;top:-7px;width:2px;height:43px;background:linear-gradient(#ffe49a 0 14%,transparent 14% 86%,#ffe49a 86% 100%)}#aimReticle:after{content:"";position:absolute;left:-7px;top:13px;width:43px;height:2px;background:linear-gradient(90deg,#ffe49a 0 14%,transparent 14% 86%,#ffe49a 86% 100%)}#aimReticle span{position:absolute;top:38px;left:50%;transform:translateX(-50%);background:#203829e3;border-radius:7px;border:1px solid #f9d69066;white-space:nowrap;color:#fff6d5;padding:3px 7px;font-size:10px;font-weight:700}#stance{position:absolute;left:50%;top:calc(61px + env(safe-area-inset-top,0px));transform:translateX(-50%);color:#f8e5a7;font-size:10px;font-weight:800;letter-spacing:.12em;z-index:4;text-shadow:0 2px 5px #0c211c;pointer-events:none;white-space:nowrap}
 #cinemaBarTop,#cinemaBarBottom{position:absolute;left:0;right:0;height:0;background:#0b1512;z-index:7;pointer-events:none;transition:height .15s}#cinemaBarTop{top:0}#cinemaBarBottom{bottom:0}.cinematic #cinemaBarTop,.cinematic #cinemaBarBottom{height:8vh}.cinematic #controls{opacity:.18;pointer-events:none}.cinematic #radar{opacity:.12}
 @media(max-width:530px){#actions{max-width:192px;gap:4px}.act{width:43px;height:43px;font-size:8px}.act.hunt{height:67px;width:67px}.act i{font-size:15px}#stick{width:106px;height:106px}#nub{left:26px;top:26px}#settingButton{padding:9px}}
 @media(max-width:530px){#reachHint{top:auto;bottom:calc(159px + env(safe-area-inset-bottom,0px));font-size:10px}}
@@ -55,7 +55,7 @@ window.hunterError=function(msg){
 </script></head>
 <body><div id="game"><canvas id="view" aria-label="3D sculpted clay forest with a cobra hunting a rat"></canvas>
 <div id="hud"><div id="brand" class="glass"><b>🐍 SILENT HUNTER</b><small>CLAY 3D · COBRA HUNTER v0.8</small></div><div id="scores"><div class="glass score">CAUGHT <strong id="caught">0</strong></div><div class="glass score">LENGTH <strong id="length">1.6m</strong></div><button id="settingButton" onclick="window.hunterSettings()" aria-label="Settings">⚙</button><button id="pause" onclick="window.hunterPause()" aria-label="Pause the game">Ⅱ</button></div></div>
-<div id="settings" class="glass"><label><input type="checkbox" id="invertX"> Invert X-axis</label><p>Applies to steering and Focus aim. Saved on this device.</p></div><div id="stance">SLITHER</div><div id="reachHint" aria-live="off"></div><div id="cinemaBarTop"></div><div id="cinemaBarBottom"></div><div id="radar" class="glass"><div class="radarrow"><span>RAT AWARENESS</span><b id="ratState">IN BURROW</b></div><div id="meterbg"><div id="meterfill"></div></div></div><div id="info"></div><div id="corner">FOCUS: sweep aim like a torch · gold ring = cobra reach</div><div id="quality">OFFLINE • CLAY 3D</div>
+<div id="settings" class="glass"><label><input type="checkbox" id="invertX"> Invert X-axis</label><p>Applies to steering and Focus aim. Saved on this device.</p></div><div id="stance">SLITHER</div><div id="aimReticle" aria-hidden="true"><span id="aimRange">STRIKE REACH</span></div><div id="reachHint" aria-live="off"></div><div id="cinemaBarTop"></div><div id="cinemaBarBottom"></div><div id="radar" class="glass"><div class="radarrow"><span>RAT AWARENESS</span><b id="ratState">IN BURROW</b></div><div id="meterbg"><div id="meterfill"></div></div></div><div id="info"></div><div id="corner">FOCUS: sweep aim like a torch · gold ring = cobra reach</div><div id="quality">OFFLINE • CLAY 3D</div>
 <div id="controls"><div id="stick" aria-label="Snake movement joystick"><div id="nub"></div></div><div id="actions"><button class="act focus" id="focus" onclick="window.hunterFocus()"><i>⊕</i>FOCUS</button><button class="act climb" id="climb" onclick="window.hunterClimb()"><i>↟</i>CLIMB</button><button class="act" id="sense" onclick="window.hunterSense()"><i>◉</i>SENSE</button><button class="act" id="sneak" onclick="window.hunterSneak()"><i>◌</i>SNEAK</button><button class="act hunt" id="strike" onclick="window.hunterStrike()"><i>⚡</i>STRIKE</button></div></div>
 <div id="overlay"><div id="panel"><div id="tag">CLAY 3D STEALTH HUNT · 100% OFFLINE</div><h1 id="modalTitle">The Silent Hunter</h1><p id="modalText">A hungry rat leaves its burrow to forage. Slide through grass, use rocks and fallen logs for cover, watch its vision cone, and strike before it escapes.</p><div id="features"><div><strong>SLITHER</strong>Steer and move with the left joystick. Camera follows your head.</div><div><strong>STALK</strong>Hide your entire coiled body in bushes. Sneak to stay low.</div><div><strong>STRIKE</strong>Focus and sweep your raised head like a torch; see your reach, then lunge toward ground prey.</div><div><strong>GROW</strong>Climb trees for birds and eggs; watch cinematic swallowing.</div></div><button id="play" onpointerdown="return window.beginHunt(event)" onclick="return window.beginHunt(event)">START HUNT</button><p id="bootStatus">If tapping Start Hunt does nothing, this viewer may be blocking JavaScript. Open the game in Safari or host it on GitHub Pages.</p><p id="smallhelp">Keyboard: WASD steer/aim · F focus · C climb · Space strike · Q sneak · P pause. No internet or downloads required.</p></div></div><div id="error" role="alert"></div></div>
 <script>
@@ -230,34 +230,16 @@ function headModel(v){
   var pupil=at(side*.202,.126,.183);blob(pupil,.025,.026,.029,C.dark,6,9);
   var gleam=at(side*.209,.141,.195);blob(gleam,.010,.010,.011,C.flower,4,7);
  }
- // Sculpted continuous hood, double-faced so it is broad and solid from the rear camera.
+ // Sculpted cobra hood with a rounded, continuous silhouette rather than separate block-like flaps.
  var hood=clamp(snake.headLift*.89+snake.coil*.23,0,1);
  if(hood>.08){
-  var rows=[
-   {p:drawnBody(.88),width:.125,up:0},
-   {p:drawnBody(.64),width:.16+.12*hood,up:0},
-   {p:drawnBody(.43),width:.18+.27*hood,up:.012},
-   {p:drawnBody(.21),width:.20+.37*hood,up:.025},
-   {p:drawnBody(.02),width:.23+.08*hood,up:-.014}
-  ];
-  function hoodPt(row,t){var curve=1-t*t;
-   return [row.p.x+rx*t*row.width-fx*(.035+curve*.07),row.p.y+row.up-.045*Math.abs(t),row.p.z+rz*t*row.width-fz*(.035+curve*.07)];}
-  for(var j=0;j<rows.length-1;j++)for(var k=0;k<10;k++){
-   var t0=-1+2*k/10,t1=-1+2*(k+1)/10;
-   var A=hoodPt(rows[j],t0),B=hoodPt(rows[j],t1),D=hoodPt(rows[j+1],t0),E=hoodPt(rows[j+1],t1);
-   v.quad(A,B,E,D,[fx*.6,.18,fz*.6],C.belly);
-   v.quad(D,E,B,A,[-fx*.65,.14,-fz*.65],j===0?C.snake:C.snakeBack);
-  }
-  // One soft border follows each side of the hood instead of a pair of block-like flaps.
-  for(var side of [-1,1]){
-   for(var j=0;j<rows.length-1;j++){
-    var A=hoodPt(rows[j],side),B=hoodPt(rows[j+1],side);
-    v.clayLink({x:A[0],y:A[1],z:A[2]},{x:B[0],y:B[1],z:B[2]},.045,C.snake);
-   }
-   // Rear hood markings, viewed from behind during Focus.
-   var rr=rows[2],cx=rr.p.x+rx*side*rr.width*.52-fx*.13,cz=rr.p.z+rz*side*rr.width*.52-fz*.13;
-   v.clayBlob(cx,rr.p.y+.14,cz,.052,.070,.026,C.belly,yaw,4,7);
-  }
+  var widest=.18+.21*hood;
+  var hc=at(0,-.30,-.18);
+  blob(hc,widest,.48,.105,C.snakeBack,11,16);
+  var hf=at(0,-.325,-.095);
+  blob(hf,widest*.75,.36,.072,C.snake,10,15);
+  var neck=drawnBody(.54);
+  v.clayBlob(neck.x,neck.y+.09,neck.z,.16,.28,.18,C.snakeBack,yaw,7,11);
  }
  if(snake.swallow){var sw=snake.swallow,t=sw.t,progress=clamp((t-.35)/1.48,0,1);
   if(progress<.94){var prey=at(0,-.13-mouth*.3,.43-progress*.46),px=prey.x,py=prey.y,pz=prey.z,sc=(1-progress)*.85+.15;
@@ -381,7 +363,7 @@ function buildReach(v){
   v.quad([p.x+Math.cos(a)*rad,p.y,p.z+Math.sin(a)*rad],[p.x+Math.cos(b)*rad,p.y,p.z+Math.sin(b)*rad],[p.x+Math.cos(b)*(rad+.032),p.y,p.z+Math.sin(b)*(rad+.032)],[p.x+Math.cos(a)*(rad+.032),p.y,p.z+Math.sin(a)*(rad+.032)],[0,1,0],C.amber);
  }
  window.__hunter.aimImpact={x:+p.x.toFixed(2),y:+p.y.toFixed(2),z:+p.z.toFixed(2),ground:point.intersects};
- var label=document.getElementById('reachHint');if(label){label.style.display='block';label.textContent='STRIKE · '+point.dist.toFixed(1)+'m '+(point.intersects?'· GROUND':'· AIR / ELEVATED');}
+ var label=document.getElementById('reachHint');if(label){label.style.display='none';label.textContent='STRIKE · '+point.dist.toFixed(1)+'m '+(point.intersects?'· GROUND':'· AIR / ELEVATED');}
 }
 function capturePrey(type){snake.strike.hit=true;snake.strike=null;snake.swallow={type:type,t:0};snake.cinematic={t:0,type:type};document.getElementById('game').classList.add('cinematic');snake.caught++;snake.length+=type==='egg'?.16:type==='bird'?.37:.31;document.getElementById('caught').textContent=snake.caught;document.getElementById('length').textContent=snake.length.toFixed(1)+'m';if(type==='rat'){rat.gone=true;rat.respawn=simTime+7;}else if(type==='egg'){NEST.eggs=Math.max(0,NEST.eggs-1);}else{bird.state='gone';bird.respawn=simTime+15;}say('CAPTURE! Watch the swallowing cinematic',2.3);}
 function checkLunge(){if(!snake.strike)return;var curr=headPosition(),prev=snake.strike.prev||curr;if(snake.strike.t>.355){snake.strike.prev=curr;return;}for(var type of ['rat','bird','egg']){if(type==='rat'&&(rat.gone||rat.state==='burrow')||type==='bird'&&bird.state!=='perch'||type==='egg'&&NEST.eggs<1)continue;var p=attackTargetPosition(type),r=type==='egg'?.37:type==='bird'?.48:.43;if(pointSegmentDistance(p,prev,curr)<r){capturePrey(type);return;}}snake.strike.prev=curr;}
@@ -408,14 +390,23 @@ function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0
 function render(t){try{requestAnimationFrame(render);var dt=Math.min(.045,Math.max(0,(t-lastT)/1000));lastT=t;if(playing){acc+=dt;var steps=0;while(acc>=1/60&&steps++<4){update(1/60);acc-=1/60;}}
  var head=headPosition(),f=aimVector(),wanted,target;
  if(snake.cinematic){var side=[Math.cos(snake.aimYaw),-Math.sin(snake.aimYaw)];wanted=[head.x+side[0]*1.95-f.x*.55,head.y+.82,head.z+side[1]*1.95-f.z*.55];target=[head.x,head.y,head.z];}
- else if(snake.focus){var cameraYaw=snake.aimYaw; var portrait=heightPx>width*1.28,dist=portrait?4.15:2.70,above=portrait?1.47:.87;
- wanted=[head.x-Math.sin(cameraYaw)*dist,head.y+above,head.z-Math.cos(cameraYaw)*dist];target=[head.x+f.x*3.7,head.y+f.y*3.7-.12,head.z+f.z*3.7];}
+ else if(snake.focus){var cameraYaw=snake.aimYaw; var portrait=heightPx>width*1.28,dist=portrait?4.15:2.70,above=portrait?1.85:1.24,lateral=portrait?.52:.88;
+ wanted=[head.x-Math.sin(cameraYaw)*dist+Math.cos(cameraYaw)*lateral,head.y+above,head.z-Math.cos(cameraYaw)*dist-Math.sin(cameraYaw)*lateral];target=[head.x+f.x*3.7,head.y+f.y*3.7-.12,head.z+f.z*3.7];}
  else if(snake.climb){wanted=[head.x-f.x*3.5,head.y+1.65,head.z-f.z*3.5];target=[head.x,head.y+.4,head.z];}
  else{wanted=[snake.x-f.x*4.2,h(snake.x,snake.z)+2.68,snake.z-f.z*4.2];target=[head.x+f.x*2.5,head.y+.12,head.z+f.z*2.5];}
  var follow=1-Math.exp(-dt*(snake.cinematic?6:snake.focus?5.5:4.2));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
- var vp=mul(projection(snake.focus?1.05:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);upload(radarMesh,d);d=new Geometry();buildReach(d);upload(reachMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);draw(reachMesh,.76);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.staticVertices=staticMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
+ var vp=mul(projection(snake.focus?1.05:1.15,width/heightPx,.09,120),viewmatrix(eye,look));
+ var reticle=document.getElementById('aimReticle');
+ if(snake.focus&&!snake.cinematic&&!snake.strike){
+  var impact=aimImpact(),px=impact.x,py=impact.y,pz=impact.z;
+  var tx=vp[0]*px+vp[4]*py+vp[8]*pz+vp[12],ty=vp[1]*px+vp[5]*py+vp[9]*pz+vp[13],tw=vp[3]*px+vp[7]*py+vp[11]*pz+vp[15];
+  if(tw>.05){var rect=canvas.getBoundingClientRect();reticle.style.display='block';reticle.style.left=(rect.left+rect.width*(.5+tx/tw*.5))+'px';reticle.style.top=(rect.top+rect.height*(.5-ty/tw*.5))+'px';
+  document.getElementById('aimRange').textContent=(impact.intersects?'IMPACT ':'AIM ')+impact.dist.toFixed(1)+'m / REACH '+MAX_REACH.toFixed(1)+'m';}
+  else reticle.style.display='none';
+ }else reticle.style.display='none';
+ gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);upload(radarMesh,d);d=new Geometry();buildReach(d);upload(reachMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);draw(reachMesh,.93);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.staticVertices=staticMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
 // Initial render frame and intro: the scene is visible behind the start panel.
-eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='0.8-dev';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
+eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='0.8-dev.2';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
 };
 // Lightweight startup — no rendering, terrain generation or WebGL context creation until Start Hunt is pressed.
 window.__hunter.bootstrapped=true;document.getElementById('bootStatus').textContent='Ready. Tap START HUNT to load the offline 3D world.';
