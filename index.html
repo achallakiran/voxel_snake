@@ -1,18 +1,19 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><meta name="theme-color" content="#183427"><title>Snake: The Silent Hunter — Voxel 3D</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"><meta name="theme-color" content="#21392e"><title>Snake: The Silent Hunter — Clay Cobra v0.8</title>
 <style>
 *{box-sizing:border-box}html,body{padding:0;margin:0;width:100%;height:100%;overflow:hidden;background:#162b25;color:#f5f7e8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overscroll-behavior:none}button{font-family:inherit}#game{position:fixed;inset:0;overflow:hidden;touch-action:none}#view{width:100%;height:100%;display:block;touch-action:none}#hud{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:calc(12px + env(safe-area-inset-left,0px));right:calc(12px + env(safe-area-inset-right,0px));z-index:5;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;pointer-events:none}.glass{background:#10281fd9;border:1px solid #f7f4cd32;border-radius:14px;box-shadow:0 5px 20px #0d211645;backdrop-filter:blur(7px)}#brand{padding:10px 13px;min-width:116px}#brand b{font-size:13px;letter-spacing:.065em}#brand small{display:block;color:#c6d9ad;font-size:10px;margin-top:3px}#scores{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.score{padding:8px 10px;font-size:11px;font-weight:650}.score strong{display:block;color:#f2d68e;font-size:14px;margin-top:2px}#pause{background:#143b2cef;color:#fff;border:1px solid #f7f4cd43;padding:10px 13px;cursor:pointer;pointer-events:auto;min-height:44px;border-radius:12px}#radar{position:absolute;right:calc(14px + env(safe-area-inset-right,0px));top:calc(90px + env(safe-area-inset-top,0px));z-index:4;width:min(202px,45vw);padding:10px 11px;font-size:11px}.radarrow{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px}.radarrow b{color:#f1d98d}#meterbg{height:7px;border-radius:10px;background:#94ae883c;overflow:hidden}#meterfill{height:100%;width:0%;background:#77c37b;transition:width .15s}#info{position:absolute;top:calc(160px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:max-content;max-width:86vw;text-align:center;background:#1c3a2de5;border:1px solid #c4de9d50;border-radius:20px;padding:8px 12px;font-size:12px;z-index:6;opacity:0;pointer-events:none;transition:opacity .25s}#info.show{opacity:1}#controls{position:absolute;z-index:10;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:8px;padding:0 max(16px,env(safe-area-inset-left,0px)) 0 max(16px,env(safe-area-inset-right,0px));pointer-events:none}#stick{width:124px;height:124px;flex:none;border:2px solid #e7f1d48a;background:#183e3077;border-radius:50%;position:relative;touch-action:none;pointer-events:auto;user-select:none;box-shadow:0 3px 20px #152d2559}#stick:before{content:"";position:absolute;top:12px;bottom:12px;left:50%;width:1px;background:#e8f3d72a}#stick:after{content:"";position:absolute;left:12px;right:12px;top:50%;height:1px;background:#e8f3d72a}#nub{position:absolute;width:54px;height:54px;left:33px;top:33px;border-radius:50%;background:#b0da89d9;border:2px solid #f4ffe9;box-shadow:0 2px 10px #0b271a5e;pointer-events:none;transform:translate(0,0)}#actions{display:flex;gap:7px;align-items:flex-end;pointer-events:auto}.act{border:1px solid #fff8d390;background:#193f31d6;color:#f6fce8;border-radius:50%;width:60px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:10px;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}.act i{font-style:normal;font-size:19px;margin-bottom:2px}.act.pressed{background:#597b3a}.act.hunt{width:81px;height:81px;background:linear-gradient(145deg,#dfae5a,#ac5d32);border:2px solid #ffdaa1;font-size:12px;color:#1c2816}#overlay{position:absolute;inset:0;background:linear-gradient(155deg,#102119ef,#213e2be9);display:grid;place-items:center;padding:20px;z-index:20;overflow:auto;touch-action:pan-y}#overlay.hidden{display:none!important}#panel{width:min(520px,100%);padding:25px;background:#142c22;border:1px solid #cae1a557;border-radius:22px;box-shadow:0 20px 70px #09180d9c}#tag{font-size:11px;letter-spacing:.19em;text-transform:uppercase;color:#e4c678;font-weight:800}#panel h1{font-size:clamp(28px,5vw,43px);margin:9px 0 5px;line-height:1.05}#panel p{color:#ccdcb9;line-height:1.55;font-size:13px}#features{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}#features>div{background:#ffffff0b;border:1px solid #cde3ae2a;padding:10px;border-radius:9px;font-size:11px;line-height:1.45;color:#d7e7c9}#features strong{display:block;color:#fff;margin-bottom:2px}#play{display:block;width:100%;background:#e3b660;color:#192a19;border:0;border-radius:12px;padding:15px 12px;font-size:15px;font-weight:850;cursor:pointer;touch-action:manipulation;position:relative;z-index:1;-webkit-tap-highlight-color:transparent}#play:active{background:#fff1a9}#play:disabled{opacity:.85;background:#d2c08e;cursor:progress}#bootStatus{min-height:28px;font-size:11px;color:#bfdba1;text-align:center;margin:8px 0;line-height:1.35}#smallhelp{text-align:center;font-size:11px!important}#error{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;width:min(500px,90vw);background:#4e2927;color:white;display:none;pointer-events:none;padding:20px;border-radius:15px;line-height:1.5}#error.show{display:block}#corner{position:absolute;bottom:calc(156px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);color:#fff9d5c4;font-size:10px;text-shadow:0 1px 4px #10281f;pointer-events:none;white-space:nowrap}#quality{position:absolute;right:14px;bottom:calc(108px + env(safe-area-inset-bottom,0px));color:#d5e9bb91;font-size:9px;pointer-events:none}
 @media(max-width:530px){#brand{padding:8px}#brand b{font-size:11px}#brand small{font-size:9px}.score{padding:7px;font-size:10px}.score strong{font-size:12px}#radar{top:calc(80px + env(safe-area-inset-top,0px))}#stick{width:109px;height:109px}#nub{left:27px;top:27px}.act{width:53px;height:53px;font-size:9px}.act.hunt{width:70px;height:70px;font-size:11px}#actions{gap:6px}#corner{bottom:calc(132px + env(safe-area-inset-bottom,0px))}#quality{bottom:calc(95px + env(safe-area-inset-bottom,0px))}#panel{padding:19px}#panel h1{font-size:29px}}
 @media(max-height:490px){#panel{padding:12px 18px}#panel h1{font-size:25px;margin:4px 0}#panel p{margin:5px 0}#features{margin:7px 0}#features>div{padding:5px 8px}#stick{height:90px;width:90px}#nub{left:17px;top:17px}#corner{display:none}#radar{top:calc(55px + env(safe-area-inset-top,0px))}#brand small{display:none}}
 
-/* v0.7 hunter interaction additions */
+/* v0.8 clay cobra: independent aiming, physical ground strikes, foliage occlusion */
 #controls{align-items:flex-end}#actions{max-width:247px;flex-wrap:wrap;justify-content:flex-end;gap:5px}
 .act{width:51px;height:51px;font-size:9px}.act i{font-size:16px}.act.hunt{width:72px;height:72px}.act.focus{background:#265c65d9;border-color:#b3eef0}.act.focus.pressed{background:#4d9b9f}.act.climb{background:#635039d9}
 #settingButton{background:#143b2cef;color:#fff;border:1px solid #f7f4cd43;padding:10px 12px;cursor:pointer;pointer-events:auto;min-height:44px;border-radius:12px}
 #settings{position:absolute;right:12px;top:calc(73px + env(safe-area-inset-top,0px));z-index:13;padding:12px 15px;display:none;min-width:212px;pointer-events:auto}#settings.open{display:block}#settings label{display:flex;gap:10px;align-items:center;font-size:12px}#settings input{width:21px;height:21px;accent-color:#b0da89}#settings p{font-size:10px;color:#c9daba;margin:7px 0 0}
-#stance{position:absolute;left:50%;top:calc(61px + env(safe-area-inset-top,0px));transform:translateX(-50%);color:#f8e5a7;font-size:10px;font-weight:800;letter-spacing:.12em;z-index:4;text-shadow:0 2px 5px #0c211c;pointer-events:none;white-space:nowrap}
+#reachHint{position:absolute;top:calc(84px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);padding:5px 8px;border-radius:9px;color:#fae7ab;background:#182f25ad;border:1px solid #f5dc8755;font-size:10px;font-weight:650;letter-spacing:.03em;display:none;white-space:nowrap;z-index:5;pointer-events:none}#aimReticle{position:absolute;z-index:9;width:32px;height:32px;margin-left:-16px;margin-top:-16px;border:2px solid #ffe49a;border-radius:50%;box-shadow:0 0 0 1px #6e502e,0 0 9px #f6cd5c91;pointer-events:none;display:none}#aimReticle:before{content:"";position:absolute;left:13px;top:-7px;width:2px;height:43px;background:linear-gradient(#ffe49a 0 14%,transparent 14% 86%,#ffe49a 86% 100%)}#aimReticle:after{content:"";position:absolute;left:-7px;top:13px;width:43px;height:2px;background:linear-gradient(90deg,#ffe49a 0 14%,transparent 14% 86%,#ffe49a 86% 100%)}#aimReticle span{position:absolute;top:38px;left:50%;transform:translateX(-50%);background:#203829e3;border-radius:7px;border:1px solid #f9d69066;white-space:nowrap;color:#fff6d5;padding:3px 7px;font-size:10px;font-weight:700}#stance{position:absolute;left:50%;top:calc(61px + env(safe-area-inset-top,0px));transform:translateX(-50%);color:#f8e5a7;font-size:10px;font-weight:800;letter-spacing:.12em;z-index:4;text-shadow:0 2px 5px #0c211c;pointer-events:none;white-space:nowrap}
 #cinemaBarTop,#cinemaBarBottom{position:absolute;left:0;right:0;height:0;background:#0b1512;z-index:7;pointer-events:none;transition:height .15s}#cinemaBarTop{top:0}#cinemaBarBottom{bottom:0}.cinematic #cinemaBarTop,.cinematic #cinemaBarBottom{height:8vh}.cinematic #controls{opacity:.18;pointer-events:none}.cinematic #radar{opacity:.12}
 @media(max-width:530px){#actions{max-width:192px;gap:4px}.act{width:43px;height:43px;font-size:8px}.act.hunt{height:67px;width:67px}.act i{font-size:15px}#stick{width:106px;height:106px}#nub{left:26px;top:26px}#settingButton{padding:9px}}
+@media(max-width:530px){#reachHint{top:auto;bottom:calc(159px + env(safe-area-inset-bottom,0px));font-size:10px}}
 @media(max-height:490px){#actions{max-width:246px}.act{width:44px;height:44px}.act.hunt{width:62px;height:62px}#stance{top:36px}}
 </style>
 <script>
@@ -52,11 +53,11 @@ window.hunterError=function(msg){
   var error=document.getElementById('error');if(error){error.textContent='';error.className='';}
 };
 </script></head>
-<body><div id="game"><canvas id="view" aria-label="3D voxel forest with a snake hunting a mouse"></canvas>
-<div id="hud"><div id="brand" class="glass"><b>🐍 SILENT HUNTER</b><small>VOXEL 3D · VERTICAL HUNTER</small></div><div id="scores"><div class="glass score">CAUGHT <strong id="caught">0</strong></div><div class="glass score">LENGTH <strong id="length">1.6m</strong></div><button id="settingButton" onclick="window.hunterSettings()" aria-label="Settings">⚙</button><button id="pause" onclick="window.hunterPause()" aria-label="Pause the game">Ⅱ</button></div></div>
-<div id="settings" class="glass"><label><input type="checkbox" id="invertX"> Invert X-axis</label><p>Applies to steering and Focus aim. Saved on this device.</p></div><div id="stance">SLITHER</div><div id="cinemaBarTop"></div><div id="cinemaBarBottom"></div><div id="radar" class="glass"><div class="radarrow"><span>RAT AWARENESS</span><b id="ratState">IN BURROW</b></div><div id="meterbg"><div id="meterfill"></div></div></div><div id="info"></div><div id="corner">Hide in vegetation · wait for the perfect strike</div><div id="quality">OFFLINE • WEBGL 3D</div>
+<body><div id="game"><canvas id="view" aria-label="3D sculpted clay forest with a cobra hunting a rat"></canvas>
+<div id="hud"><div id="brand" class="glass"><b>🐍 SILENT HUNTER</b><small>CLAY 3D · COBRA HUNTER v0.8</small></div><div id="scores"><div class="glass score">CAUGHT <strong id="caught">0</strong></div><div class="glass score">LENGTH <strong id="length">1.6m</strong></div><button id="settingButton" onclick="window.hunterSettings()" aria-label="Settings">⚙</button><button id="pause" onclick="window.hunterPause()" aria-label="Pause the game">Ⅱ</button></div></div>
+<div id="settings" class="glass"><label><input type="checkbox" id="invertX"> Invert X-axis</label><p>Applies to steering and Focus aim. Saved on this device.</p></div><div id="stance">SLITHER</div><div id="aimReticle" aria-hidden="true"><span id="aimRange">STRIKE REACH</span></div><div id="reachHint" aria-live="off"></div><div id="cinemaBarTop"></div><div id="cinemaBarBottom"></div><div id="radar" class="glass"><div class="radarrow"><span>RAT AWARENESS</span><b id="ratState">IN BURROW</b></div><div id="meterbg"><div id="meterfill"></div></div></div><div id="info"></div><div id="corner">FOCUS: sweep aim like a torch · gold ring = cobra reach</div><div id="quality">OFFLINE • CLAY 3D</div>
 <div id="controls"><div id="stick" aria-label="Snake movement joystick"><div id="nub"></div></div><div id="actions"><button class="act focus" id="focus" onclick="window.hunterFocus()"><i>⊕</i>FOCUS</button><button class="act climb" id="climb" onclick="window.hunterClimb()"><i>↟</i>CLIMB</button><button class="act" id="sense" onclick="window.hunterSense()"><i>◉</i>SENSE</button><button class="act" id="sneak" onclick="window.hunterSneak()"><i>◌</i>SNEAK</button><button class="act hunt" id="strike" onclick="window.hunterStrike()"><i>⚡</i>STRIKE</button></div></div>
-<div id="overlay"><div id="panel"><div id="tag">3D VOXEL STEALTH GAME · 100% OFFLINE</div><h1 id="modalTitle">The Silent Hunter</h1><p id="modalText">A hungry rat leaves its burrow to forage. Slide through grass, use rocks and fallen logs for cover, watch its vision cone, and strike before it escapes.</p><div id="features"><div><strong>SLITHER</strong>Steer and move with the left joystick. Camera follows your head.</div><div><strong>STALK</strong>Hide your entire coiled body in bushes. Sneak to stay low.</div><div><strong>STRIKE</strong>Focus aims your raised cobra head. Strike physically lunges, even at empty space.</div><div><strong>GROW</strong>Climb trees for birds and eggs; watch cinematic swallowing.</div></div><button id="play" onpointerdown="return window.beginHunt(event)" onclick="return window.beginHunt(event)">START HUNT</button><p id="bootStatus">If tapping Start Hunt does nothing, this viewer may be blocking JavaScript. Open the game in Safari or host it on GitHub Pages.</p><p id="smallhelp">Keyboard: WASD steer/aim · F focus · C climb · Space strike · Q sneak · P pause. No internet or downloads required.</p></div></div><div id="error" role="alert"></div></div>
+<div id="overlay"><div id="panel"><div id="tag">CLAY 3D STEALTH HUNT · 100% OFFLINE</div><h1 id="modalTitle">The Silent Hunter</h1><p id="modalText">A hungry rat leaves its burrow to forage. Slide through grass, use rocks and fallen logs for cover, watch its vision cone, and strike before it escapes.</p><div id="features"><div><strong>SLITHER</strong>Steer and move with the left joystick. Camera follows your head.</div><div><strong>STALK</strong>Hide your entire coiled body in bushes. Sneak to stay low.</div><div><strong>STRIKE</strong>Focus and sweep your raised head like a torch; see your reach, then lunge toward ground prey.</div><div><strong>GROW</strong>Climb trees for birds and eggs; watch cinematic swallowing.</div></div><button id="play" onpointerdown="return window.beginHunt(event)" onclick="return window.beginHunt(event)">START HUNT</button><p id="bootStatus">If tapping Start Hunt does nothing, this viewer may be blocking JavaScript. Open the game in Safari or host it on GitHub Pages.</p><p id="smallhelp">Keyboard: WASD steer/aim · F focus · C climb · Space strike · Q sneak · P pause. No internet or downloads required.</p></div></div><div id="error" role="alert"></div></div>
 <script>
 window.__initHunter=function(){'use strict';
 // ----- Math and deterministic helpers (procedural voxel ideas from the supplied games) -----
@@ -64,15 +65,57 @@ var TAU=Math.PI*2, clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), lerp=(a,b,t)=>a+(b-
 function hash(a,b,c){var h=Math.imul(a|0,374761393)+Math.imul(b|0,668265263)+Math.imul(c|0,2147483629);h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967296;}
 function noise(x,z,seed){var xi=Math.floor(x),zi=Math.floor(z),u=x-xi,v=z-zi;u=u*u*(3-2*u);v=v*v*(3-2*v);var a=hash(xi,zi,seed),b=hash(xi+1,zi,seed),c=hash(xi,zi+1,seed),d=hash(xi+1,zi+1,seed);return lerp(lerp(a,b,u),lerp(c,d,u),v);}
 function h(x,z){return .22+ (noise(x*.14,z*.14,8)-.5)*1.0+(noise(x*.38,z*.38,17)-.5)*.17;}
-var C={grass:[.31,.53,.25],grass2:[.42,.65,.28],ground:[.48,.46,.29],moss:[.32,.56,.32],wood:[.43,.29,.16],wood2:[.30,.20,.11],leaf:[.26,.50,.23],leaf2:[.39,.65,.32],leaf3:[.49,.69,.30],stone:[.49,.51,.47],stone2:[.37,.44,.40],snake:[.27,.62,.32],snakeBack:[.20,.42,.24],belly:[.66,.80,.39],rat:[.54,.43,.34],ratLight:[.77,.64,.50],ear:[.87,.56,.52],dark:[.18,.18,.15],nose:[.85,.51,.49],amber:[.96,.76,.34],water:[.38,.58,.62],flower:[.96,.8,.34]};
+var C={grass:[.46,.62,.39],grass2:[.55,.69,.46],ground:[.56,.49,.37],moss:[.43,.60,.41],wood:[.58,.41,.31],wood2:[.44,.32,.24],leaf:[.43,.62,.45],leaf2:[.55,.72,.51],leaf3:[.63,.77,.52],stone:[.65,.64,.57],stone2:[.54,.57,.52],snake:[.43,.68,.48],snakeBack:[.30,.52,.39],belly:[.82,.78,.55],rat:[.64,.53,.46],ratLight:[.81,.72,.62],ear:[.88,.62,.62],dark:[.20,.26,.21],nose:[.75,.51,.45],amber:[.96,.77,.39],water:[.53,.73,.73],flower:[.98,.81,.47]};
 function Geometry(){this.v=[];this.count=0;}
 Geometry.prototype.vert=function(p,n,c){this.v.push(p[0],p[1],p[2],n[0],n[1],n[2],c[0],c[1],c[2]);this.count++;};
 Geometry.prototype.tri=function(a,b,c,n,col){this.vert(a,n,col);this.vert(b,n,col);this.vert(c,n,col);};
 Geometry.prototype.quad=function(a,b,c,d,n,col){this.tri(a,b,c,n,col);this.tri(a,c,d,n,col);};
 Geometry.prototype.box=function(x,y,z,sx,sy,sz,col,rot){var hx=sx*.5,hy=sy*.5,hz=sz*.5,cs=Math.cos(rot||0),sn=Math.sin(rot||0);var v=[[-hx,-hy,-hz],[hx,-hy,-hz],[hx,hy,-hz],[-hx,hy,-hz],[-hx,-hy,hz],[hx,-hy,hz],[hx,hy,hz],[-hx,hy,hz]];for(var i=0;i<8;i++){var p=v[i],px=p[0],pz=p[2];p[0]=x+px*cs+pz*sn;p[1]+=y;p[2]=z-px*sn+pz*cs;}var faces=[[4,5,6,7,0,0,1],[1,0,3,2,0,0,-1],[5,1,2,6,1,0,0],[0,4,7,3,-1,0,0],[7,6,2,3,0,1,0],[0,1,5,4,0,-1,0]];for(var k=0;k<faces.length;k++){var f=faces[k],nx=f[4]*cs+f[6]*sn,nz=-f[4]*sn+f[6]*cs;var shade=k===4?1.13:k===5?.59:k===0?.91:k===1?.76:1;var color=[clamp(col[0]*shade,0,1),clamp(col[1]*shade,0,1),clamp(col[2]*shade,0,1)];this.quad(v[f[0]],v[f[1]],v[f[2]],v[f[3]],[nx,f[5],nz],color);}};
+// Sculpted rounded clay volumes with smooth vertex normals and matte directional lighting.
+Geometry.prototype.clayBlob=function(x,y,z,sx,sy,sz,col,yaw,rings,sides,pitch){
+ rings=rings||7;sides=sides||10;var ca=Math.cos(yaw||0),sa=Math.sin(yaw||0),cpit=Math.cos(pitch||0),spit=Math.sin(pitch||0);
+ function v(phi,theta){var cp=Math.cos(phi),xx=Math.sin(theta)*cp,yy=Math.sin(phi),zz=Math.cos(theta)*cp;
+  var localY=yy*sy*cpit+zz*sz*spit,localZ=zz*sz*cpit-yy*sy*spit;
+  var xxr=xx*sx*ca+localZ*sa,zzr=-xx*sx*sa+localZ*ca;
+  var gx=xx/Math.max(.001,sx),gy=yy/Math.max(.001,sy),gz=zz/Math.max(.001,sz);
+  var ny=gy*cpit+gz*spit,nzp=gz*cpit-gy*spit,nx=gx*ca+nzp*sa,nz=-gx*sa+nzp*ca,nl=Math.hypot(nx,ny,nz)||1;
+  return {p:[x+xxr,y+localY,z+zzr],n:[nx/nl,ny/nl,nz/nl]};}
+ for(var i=0;i<rings;i++){
+  var lat0=-Math.PI/2+i*Math.PI/rings,lat1=-Math.PI/2+(i+1)*Math.PI/rings;
+  for(var j=0;j<sides;j++){
+   var a=j*TAU/sides,b=(j+1)*TAU/sides,A=v(lat0,a),B=v(lat0,b),D=v(lat1,a),E=v(lat1,b);
+   for(var vertex of [A,B,E,A,E,D])this.vert(vertex.p,vertex.n,col);
+  }
+ }
+};
+Geometry.prototype.clayLink=function(a,b,r,col){
+ var dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=Math.hypot(dx,dy,dz)||1,axis=[dx/L,dy/L,dz/L],side=[axis[2],0,-axis[0]],sl=Math.hypot(...side);
+ if(sl<.0001){side=[1,0,0];sl=1;}side=side.map(x=>x/sl);
+ var up=[axis[1]*side[2]-axis[2]*side[1],axis[2]*side[0]-axis[0]*side[2],axis[0]*side[1]-axis[1]*side[0]];
+ var sides=9;for(var i=0;i<sides;i++){var t=i*TAU/sides,u=(i+1)*TAU/sides;
+   function point(p,theta){var c=Math.cos(theta),q=Math.sin(theta);return [p.x+r*(side[0]*c+up[0]*q*.90),p.y+r*(side[1]*c+up[1]*q*.90),p.z+r*(side[2]*c+up[2]*q*.90)];}
+   var n=[side[0]*Math.cos(t+TAU/(sides*2))+up[0]*Math.sin(t+TAU/(sides*2)),side[1]*Math.cos(t+TAU/(sides*2))+up[1]*Math.sin(t+TAU/(sides*2)),side[2]*Math.cos(t+TAU/(sides*2))+up[2]*Math.sin(t+TAU/(sides*2))];
+   this.quad(point(a,t),point(a,u),point(b,u),point(b,t),n,col);
+ }
+};
+// Budget-friendly sculpted grass tufts: two bent, tapered leaves rather than dozens of ellipsoid faces.
+Geometry.prototype.clayBlade=function(x,y,z,size,col,yaw){
+ for(var j=0;j<2;j++){var ang=(yaw||0)+j*Math.PI*.57,c=Math.cos(ang),sn=Math.sin(ang),w=.064+size*.14;
+  var A=[x-c*w,y,z-sn*w],B=[x+c*w,y,z+sn*w];
+  var midX=x+sn*.026,midZ=z-c*.026;
+  var D=[midX-c*w*.73,y+size*.62,midZ-sn*w*.73],E=[midX+c*w*.73,y+size*.62,midZ+sn*w*.73];
+  var T=[x+sn*size*.20,y+size,z-c*size*.20],normal=[-sn,0,c];
+  this.quad(A,B,E,D,normal,col);this.tri(D,E,T,normal,col);
+  this.quad(D,E,B,A,normal.map(t=>-t),col);this.tri(T,E,D,normal.map(t=>-t),col);
+ }
+};
+Geometry.prototype.clayTrunk=function(x,y,z,rad,height,col){var sides=9;for(var i=0;i<sides;i++){var a=i*TAU/sides,b=(i+1)*TAU/sides;var co=i%3===0?C.wood2:col;
+  var p=[x+Math.cos(a)*rad,y,z+Math.sin(a)*rad],q=[x+Math.cos(b)*rad,y,z+Math.sin(b)*rad],u=[x+Math.cos(a)*rad*.75,y+height,z+Math.sin(a)*rad*.75],v=[x+Math.cos(b)*rad*.75,y+height,z+Math.sin(b)*rad*.75];this.quad(p,u,v,q,[Math.cos((a+b)/2),0,Math.sin((a+b)/2)],co);
+ }};
 Geometry.prototype.link3=function(a,b,r,color){
  var dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=Math.hypot(dx,dy,dz)||1;
- var u=[dx/L,dy/L,dz/L],s=[u[2],0,-u[0]],sl=Math.hypot(...s)||1;s=s.map(k=>k/sl);
+ var u=[dx/L,dy/L,dz/L],s=[u[2],0,-u[0]],sl=Math.hypot(...s);
+ if(sl<.0001){s=[1,0,0];sl=1;}s=s.map(k=>k/sl);
  var q=[u[1]*s[2]-u[2]*s[1],u[2]*s[0]-u[0]*s[2],u[0]*s[1]-u[1]*s[0]];
  var corners=function(p){return [[p.x+s[0]*r+q[0]*r*.82,p.y+s[1]*r+q[1]*r*.82,p.z+s[2]*r+q[2]*r*.82],[p.x-s[0]*r+q[0]*r*.82,p.y-s[1]*r+q[1]*r*.82,p.z-s[2]*r+q[2]*r*.82],[p.x-s[0]*r-q[0]*r*.82,p.y-s[1]*r-q[1]*r*.82,p.z-s[2]*r-q[2]*r*.82],[p.x+s[0]*r-q[0]*r*.82,p.y+s[1]*r-q[1]*r*.82,p.z+s[2]*r-q[2]*r*.82]];};
  var A=corners(a),B=corners(b);for(var j=0;j<4;j++){var k=(j+1)%4,n=j===0?q:j===1?s.map(v=>-v):j===2?q.map(v=>-v):s;this.quad(A[j],B[j],B[k],A[k],n,color);}this.quad(A[3],A[2],A[1],A[0],u.map(v=>-v),color);this.quad(B[0],B[1],B[2],B[3],u,color);
@@ -88,16 +131,16 @@ if(!inside(ix,iy-1,iz))this.quad([x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1],[0,
 }};
 Geometry.prototype.plane=function(a,b,c,d,col){var ab=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],ac=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],n=[ab[1]*ac[2]-ab[2]*ac[1],ab[2]*ac[0]-ab[0]*ac[2],ab[0]*ac[1]-ab[1]*ac[0]],l=Math.hypot(...n)||1;n=n.map(v=>v/l);this.quad(a,b,c,d,n,col);};
 // ----- Minimal WebGL1 3D renderer. No Three.js, CDN, imports, fetch or server. -----
-var canvas=document.getElementById('view'),gl=null,shader=null,staticMesh=null,dynamicMesh=null,radarMesh=null,eye=[0,3,12],look=[0,1,0];
+var canvas=document.getElementById('view'),gl=null,shader=null,staticMesh=null,dynamicMesh=null,radarMesh=null,reachMesh=null,eye=[0,3,12],look=[0,1,0];
 var upload,draw,projection,viewmatrix,mul,resize;try{gl=canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:false})||canvas.getContext('experimental-webgl');if(!gl)throw Error('WebGL not available in this browser. Enable WebGL in Safari settings.');
 window.__hunter.webgl=true;
 function compile(type,src){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;}
-var vs='attribute vec3 aPos;attribute vec3 aNormal;attribute vec3 aColor;uniform mat4 uVP;uniform vec3 uSun;varying vec3 vColor;varying float vFog;void main(){vec4 clip=uVP*vec4(aPos,1.);gl_Position=clip;float ambient=0.64;float lit=max(0.,dot(normalize(aNormal),normalize(uSun)));vColor=aColor*(ambient+0.42*lit);vFog=clamp((length(clip.xyz)/max(clip.w,.01)-11.)/75.,0.,.62);}';
-var fs='precision mediump float;varying vec3 vColor;varying float vFog;uniform float uAlpha;void main(){vec3 c=mix(vColor,vec3(.66,.78,.64),vFog);gl_FragColor=vec4(c,uAlpha);}';
+var vs='attribute vec3 aPos;attribute vec3 aNormal;attribute vec3 aColor;uniform mat4 uVP;uniform vec3 uSun;varying vec3 vColor;varying float vFog;void main(){vec4 clip=uVP*vec4(aPos,1.);gl_Position=clip;float ambient=0.77;float lit=max(0.,dot(normalize(aNormal),normalize(uSun)));vColor=aColor*(ambient+0.29*lit);vFog=clamp((length(clip.xyz)/max(clip.w,.01)-11.)/75.,0.,.62);}';
+var fs='precision mediump float;varying vec3 vColor;varying float vFog;uniform float uAlpha;void main(){vec3 c=mix(vColor,vec3(.72,.82,.74),vFog);gl_FragColor=vec4(c,uAlpha);}';
 shader=gl.createProgram();gl.attachShader(shader,compile(gl.VERTEX_SHADER,vs));gl.attachShader(shader,compile(gl.FRAGMENT_SHADER,fs));gl.linkProgram(shader);if(!gl.getProgramParameter(shader,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(shader));gl.useProgram(shader);
-var loc={pos:gl.getAttribLocation(shader,'aPos'),nor:gl.getAttribLocation(shader,'aNormal'),col:gl.getAttribLocation(shader,'aColor'),vp:gl.getUniformLocation(shader,'uVP'),sun:gl.getUniformLocation(shader,'uSun'),alpha:gl.getUniformLocation(shader,'uAlpha')};gl.uniform3f(loc.sun,-.5,.9,.4);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);gl.clearColor(.66,.78,.64,1);
+var loc={pos:gl.getAttribLocation(shader,'aPos'),nor:gl.getAttribLocation(shader,'aNormal'),col:gl.getAttribLocation(shader,'aColor'),vp:gl.getUniformLocation(shader,'uVP'),sun:gl.getUniformLocation(shader,'uSun'),alpha:gl.getUniformLocation(shader,'uAlpha')};gl.uniform3f(loc.sun,-.5,.9,.4);gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);gl.clearColor(.70,.81,.75,1);
 function mesh(dynamic){return{buffer:gl.createBuffer(),count:0,usage:dynamic?gl.DYNAMIC_DRAW:gl.STATIC_DRAW};}
-staticMesh=mesh(false);dynamicMesh=mesh(true);radarMesh=mesh(true);
+staticMesh=mesh(false);dynamicMesh=mesh(true);radarMesh=mesh(true);reachMesh=mesh(true);
 upload=function(m,g){gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(g.v),m.usage);m.count=g.count;}
 draw=function(m,alpha){if(!m.count)return;gl.bindBuffer(gl.ARRAY_BUFFER,m.buffer);var stride=36;gl.enableVertexAttribArray(loc.pos);gl.enableVertexAttribArray(loc.nor);gl.enableVertexAttribArray(loc.col);gl.vertexAttribPointer(loc.pos,3,gl.FLOAT,false,stride,0);gl.vertexAttribPointer(loc.nor,3,gl.FLOAT,false,stride,12);gl.vertexAttribPointer(loc.col,3,gl.FLOAT,false,stride,24);gl.uniform1f(loc.alpha,alpha);gl.drawArrays(gl.TRIANGLES,0,m.count);}
 projection=function(fov,aspect,near,far){var f=1/Math.tan(fov*.5),nf=1/(near-far);return[f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,2*far*near*nf,0];}
@@ -109,33 +152,37 @@ window.addEventListener('resize',resize);resize();
 // ----- Authored hunting landscape, decorated with reproducible voxels -----
 var g=new Geometry(),solid=[],bush=[],climbables=[],W=22,BUR={x:-5.8,z:-8.4},FOOD={x:3.1,z:-1.9};
 function addSolid(x,z,r){solid.push({x:x,z:z,r:r});}
-function addBush(x,z,r){bush.push({x:x,z:z,r:r});}
+function addBush(x,z,r){bush.push({x:x,z:z,r:r,base:h(x,z),height:1.30,opacity:2.8});}
 function vegColor(i){return [C.leaf,C.leaf2,C.leaf3][i%3];}
 // Terrain shaded tessellation, raised voxel soil edge, colorful grassy patches.
 for(var x=-W;x<W;x+=.95)for(var z=-W;z<W;z+=.95){var x1=Math.min(W,x+.95),z1=Math.min(W,z+.95);var t=noise(x*.24,z*.24,9),pc=hash(x*12|0,z*12|0,11);var col=t<.33?C.grass:pc<.12?C.ground:t>.72?C.grass2:C.moss;g.plane([x,h(x,z),z],[x,h(x,z1),z1],[x1,h(x1,z1),z1],[x1,h(x1,z),z],col);}
 for(var x=-W;x<W;x+=2){var gh=h(x,-W);g.box(x+1,gh-1,-W,.0+.0+2,2,.1,C.ground);gh=h(x,W);g.box(x+1,gh-1,W,2,2,.1,C.ground);}
-function rock(x,z,r,seed){var y=h(x,z);g.box(x,y+r*.37,z,r*1.8,r*.8,r*1.5,C.stone2,hash(seed,2,9)*2);g.box(x+r*.18,y+r*.72,z-r*.1,r*1.6,r*.75,r*1.3,C.stone,hash(seed,2,13)*2);addSolid(x,z,r*.83);}
-// Giant trunks use variable-size voxel blocks, foliage uses exposed cube shell technique.
-function tree(x,z,r,seed){var y=h(x,z),tall=4+hash(seed,4,1)*3;g.box(x,y+tall*.45,z,r*.65,tall*.9,r*.65,C.wood);for(var i=0;i<3;i++){var ang=i*TAU/3+hash(seed,i,1),dx=Math.cos(ang)*r*.52,dz=Math.sin(ang)*r*.52;g.box(x+dx,y+.45,z+dz,r*.35,1.0,r*.35,C.wood2,ang);}g.voxels(x,y+tall,z,r*1.95,.70,seed,[C.leaf,C.leaf2,C.leaf3]);g.voxels(x+r*.8,y+tall-.6,z+r*.3,r*1.20,.70,seed+11,[C.leaf2,C.leaf,C.leaf3]);addSolid(x,z,r*.66);climbables.push({type:"tree",x:x,z:z,r:r*.66,height:tall,top:y+tall});}
+function rock(x,z,r,seed){var y=h(x,z);g.clayBlob(x,y+r*.40,z,r*.94,r*.53,r*.83,C.stone2,hash(seed,2,9)*2,5,9);g.clayBlob(x+r*.18,y+r*.78,z-r*.12,r*.69,r*.48,r*.64,C.stone,hash(seed,2,13)*2,6,10);addSolid(x,z,r*.83);}
+// Hand-sculpted clay trunks and rounded foliage; original climb collision surfaces retained.
+function tree(x,z,r,seed){var y=h(x,z),tall=4+hash(seed,4,1)*3;g.clayTrunk(x,y,z,r*.38,tall,C.wood);for(var i=0;i<3;i++){var ang=i*TAU/3+hash(seed,i,1),dx=Math.cos(ang)*r*.52,dz=Math.sin(ang)*r*.52;g.clayBlob(x+dx,y+.45,z+dz,r*.24,.55,r*.25,C.wood2,ang,5,8);}g.clayBlob(x,y+tall+.35,z,r*1.30,r*1.26,r*1.18,C.leaf,0,8,12);g.clayBlob(x+r*.85,y+tall-.15,z+r*.30,r*1.0,r*.88,r*.90,C.leaf2,0,7,11);g.clayBlob(x-r*.75,y+tall-.30,z-r*.3,r*.85,r*.78,r*.9,C.leaf3,0,7,10);addSolid(x,z,r*.66);climbables.push({type:"tree",x:x,z:z,r:r*.66,height:tall,top:y+tall});}
 // Border forest frame plus featured large tree; ensure open playable central corridor.
 for(var i=0;i<17;i++){var a=i*2.399,r=17+hash(i,4,2)*5.0,x=Math.cos(a)*r,z=Math.sin(a)*r;tree(x,z,.85+hash(i,7,8)*.4,i+30);}
 tree(3,7,1.13,141);tree(-10,-5,1.6,120);tree(10,-11,1.25,145);tree(10,10,1.1,156);tree(-12,10,.9,167);
 rock(1.8,-9.4,1.0,1);rock(-.6,-4.6,.95,2);rock(9,-2.5,1.15,3);rock(-9,5.1,1.45,4);rock(7,6.7,1.05,6);
 // Brown log to hide behind, rests diagonally along a foraging route.
-(function(){var x=5,z=-5,y=h(x,z);g.box(x,y+.48,z,4.1,.82,1.07,C.wood2,-.45);for(var i=0;i<5;i++)g.box(x-1.7+i*.86,y+.93,z+.1,.13,.08,.9,C.wood,-.45);addSolid(x,z,1.0);climbables.push({type:"log",x:x,z:z,r:1.0,height:.9,top:y+.9});})();
+(function(){var x=5,z=-5,y=h(x,z);g.clayLink({x:x-1.80,y:y+.45,z:z+.85},{x:x+1.80,y:y+.45,z:z-.85},.48,C.wood2);
+for(var i=0;i<5;i++){var bx=x-1.5+i*.74;g.clayBlob(bx,y+.80,z+.20-i*.16,.09,.05,.13,C.wood,0,5,7);}addSolid(x,z,1.0);climbables.push({type:"log",x:x,z:z,r:1.0,height:.9,top:y+.9});})();
 // Rough voxel wall: navigable climb surface, separate from solid blocking geometry.
-(function(){var x=13,z=2,y=h(x,z);for(var i=0;i<7;i++)for(var j=0;j<8;j++)g.box(x,y+.22+i*.43,z-3.3+j*.91,.62,.44,.87,(i+j)%3===0?C.stone:C.stone2);climbables.push({type:'wall',x:x,z:z,r:.9,height:3.2,top:y+3.2});addSolid(x,z,1.1);})();
+(function(){var x=13,z=2,y=h(x,z);for(var i=0;i<7;i++)for(var j=0;j<8;j++)g.clayBlob(x,y+.22+i*.43,z-3.3+j*.91,.40,.24,.51,(i+j)%3===0?C.stone:C.stone2,0,5,7);climbables.push({type:'wall',x:x,z:z,r:.9,height:3.2,top:y+3.2});addSolid(x,z,1.1);})();
 // Near-start tree has a reachable canopy branch with a nest, eggs and a small bird.
 var NEST={x:5.05,z:7,y:h(3,7)+3.25,eggs:2};
-(function(){var y=h(3,7)+3.12;for(var j=0;j<6;j++)g.box(3.3+j*.38,y+(j%2)*.025,7,.48,.36,.50,C.wood,j%2*.13);g.box(NEST.x,NEST.y-.05,NEST.z,.82,.2,.75,C.wood2);for(var i=0;i<7;i++){var a=i*TAU/7;g.box(NEST.x+Math.cos(a)*.38,NEST.y+.05,NEST.z+Math.sin(a)*.33,.20,.17,.21,C.wood);}climbables.push({type:'branch',x:NEST.x,z:NEST.z,r:.55,height:3.2,top:NEST.y});})();
+(function(){var y=h(3,7)+3.12;for(var j=0;j<6;j++)g.clayBlob(3.3+j*.38,y+(j%2)*.025,7,.32,.22,.27,C.wood,j%2*.13,5,8);
+g.clayBlob(NEST.x,NEST.y-.05,NEST.z,.52,.17,.46,C.wood2,0,6,9);for(var i=0;i<7;i++){var a=i*TAU/7;g.clayBlob(NEST.x+Math.cos(a)*.38,NEST.y+.05,NEST.z+Math.sin(a)*.33,.15,.08,.12,C.wood,0,5,7);}climbables.push({type:'branch',x:NEST.x,z:NEST.z,r:.55,height:3.2,top:NEST.y});})();
 // Burrow made of a low shaded earth rim with dark recessed entrance.
 (function(){var x=BUR.x,z=BUR.z,y=h(x,z);g.box(x,y+.12,z,1.65,.18,1.4,C.ground);g.box(x,y+.24,z-.05,.85,.07,.67,C.dark);for(var i=0;i<8;i++){var a=i*TAU/8;g.box(x+Math.cos(a)*.7,y+.29,z+Math.sin(a)*.6,.34,.24,.33,C.ground);}})();
 // Rat food (voxel seeds and berries)
 for(var i=0;i<13;i++){var a=hash(i,2,4)*TAU,dd=hash(i,3,5)*1.2,x=FOOD.x+Math.cos(a)*dd,z=FOOD.z+Math.sin(a)*dd;g.box(x,h(x,z)+.08,z,.12,.12,.13,i%4===0?C.flower:C.ground);}
 // Ground flora: voxel grass tufts and small yellow flowers; limit center density for view.
-for(var i=0;i<950;i++){var x=(hash(i,4,57)-.5)*42,z=(hash(i,3,58)-.5)*42;var y=h(x,z),size=.12+hash(i,8,8)*.26;var col=i%5===0?C.leaf3:C.leaf2;if(hash(i,6,5)<.09){g.box(x,y+.18,z,.11,.36,.11,C.flower);g.box(x,y+.39,z,.17,.14,.15,C.flower);}else{g.box(x,y+size*.55,z,.09,size,.07,col);if(i%3===0)g.box(x+.13,y+size*.4,z,.08,size*.7,.06,C.leaf);}}
+for(var i=0;i<800;i++){var x=(hash(i,4,57)-.5)*42,z=(hash(i,3,58)-.5)*42;var y=h(x,z),size=.12+hash(i,8,8)*.26;var col=i%5===0?C.leaf3:C.leaf2;if(hash(i,6,5)<.09){g.clayTrunk(x,y+.02,z,.042,.29,C.leaf);g.clayBlob(x,y+.35,z,.09,.09,.11,C.flower,0,4,6);}else{g.clayBlade(x,y,z,size,col,hash(i,7,4)*6.28);if(i%3===0)g.clayBlade(x+.12,y,z,size*.74,C.leaf,hash(i,5,8)*6.28);}}
 // Bushes are usable cover; visible leafy voxel clusters.
-function shrub(x,z,r,i){var y=h(x,z);g.voxels(x,y+.65,z,r,.27,i,[C.leaf,C.leaf2,C.leaf3]);addBush(x,z,r);}
+function shrub(x,z,r,i){var y=h(x,z);g.clayBlob(x,y+.53,z,r*.86,.65,r*.85,C.leaf2,0,7,10);
+ for(var k=0;k<5;k++){var a=k*TAU/5+.35;g.clayBlob(x+Math.cos(a)*r*.47,y+.53+(k%2)*.10,z+Math.sin(a)*r*.47,r*.46,.42,r*.47,[C.leaf,C.leaf2,C.leaf3][k%3],0,6,9);}
+ addBush(x,z,r);}
 [[2,5,1.1],[0,-6.5,1.2],[-2,2.2,1],[-8,.8,1.2],[6,-10,1],[-6,7,1.3],[9,1,1.1],[4.4,-8,1.1],[6,3,1.15],[-1,9,1.3]].forEach((p,i)=>shrub(p[0],p[1],p[2],i+221));
 upload(staticMesh,g);g=null;
 // ----- 3D cobra: body history + constrained coiling/neck + strikes + supported climbing -----
@@ -152,40 +199,101 @@ function coilPoint(d){var sn=snake,baseY=h(sn.x,sn.z),dir=[Math.sin(sn.heading),
  if(d<.83){var t=d/.83,angle=sn.heading+Math.PI,neckX=lerp(sn.x,cx,t),neckZ=lerp(sn.z,cz,t);return{x:neckX+Math.sin(angle)*Math.sin(t*Math.PI)*.08,y:baseY+.22+(1-t)*(1-t)*1.04,z:neckZ+Math.cos(angle)*Math.sin(t*Math.PI)*.08};}
  var f=(d-.83)/Math.max(.55,sn.length-.83),ang=sn.heading+Math.PI*.3+(d-.83)*TAU/1.03,r=.15+Math.sqrt(f)*(.45+sn.length*.065);return{x:cx+Math.cos(ang)*r,y:baseY+.21+Math.floor((d-.83)/1.03)*.05,z:cz+Math.sin(ang)*r};}
 function bodyAt(d){var p=pathAt(d),base=h(p.x,p.z)+.21;var raise=Math.max(0,1-d/1.05);p={x:p.x,y:p.y+snake.headLift*raise*raise,z:p.z};var cp=coilPoint(d),f=snake.coil;return{x:lerp(p.x,cp.x,f),y:lerp(p.y,cp.y,f),z:lerp(p.z,cp.z,f)};}
-function lungeDistance(){if(!snake.strike)return 0;var t=snake.strike.t;return t<.10?0:t<.27?snake.strike.reach*(t-.10)/.17:t<.34?snake.strike.reach:snake.strike.reach*(1-clamp((t-.34)/.32,0,1));}
+function strikeProgress(){if(!snake.strike)return 0;var t=snake.strike.t;
+ if(t<.08)return 0;if(t<.28){var q=(t-.08)/.20;return q*q*(3-2*q);}
+ if(t<.35)return 1;var u=clamp((t-.35)/.31,0,1);return 1-u*u*(3-2*u);}
+function lungeDistance(){return snake.strike?snake.strike.reach*strikeProgress():0;}
 function aimVector(){var st=snake.strike,ya=st?st.yaw:(snake.focus?snake.aimYaw:snake.heading),pi=st?st.pitch:(snake.focus?snake.aimPitch:0);return{x:Math.sin(ya)*Math.cos(pi),y:Math.sin(pi),z:Math.cos(ya)*Math.cos(pi)};}
-function headPosition(){var a=bodyAt(0),v=aimVector(),reach=lungeDistance();return{x:a.x+v.x*reach,y:a.y+v.y*reach,z:a.z+v.z*reach};}
-function drawnBody(d){var p=bodyAt(d),reach=lungeDistance(),v=aimVector(),fall=Math.max(0,1-d/.98);p.x+=v.x*reach*fall*fall;p.y+=v.y*reach*fall*fall;p.z+=v.z*reach*fall*fall;return p;}
-function headModel(v){var p=headPosition(),yaw=snake.strike?snake.strike.yaw:snake.focus?snake.aimYaw:snake.heading,dir=aimVector(),fx=dir.x,fz=dir.z,rx=Math.cos(yaw),rz=-Math.sin(yaw),mouth=(snake.swallow?(.24+Math.sin(snake.swallow.t*9)*.10):snake.strike?(.11+.13*Math.sin(Math.PI*clamp(snake.strike.t/.66,0,1))):0);
- v.box(p.x,p.y+.055,p.z,.46,.32,.59,C.snake,yaw);v.box(p.x+fx*.20,p.y-.105-mouth*.55,p.z+fz*.20,.40,.14,.38,C.belly,yaw);
- v.box(p.x+fx*.28,p.y-.04,p.z+fz*.28,.29,.06,.12,C.dark,yaw);
- for(var side of [-1,1]){var ex=p.x+rx*side*.181+fx*.16,ez=p.z+rz*side*.181+fz*.16;v.box(ex,p.y+.20,ez,.087,.11,.087,C.dark);v.box(ex+fx*.018,p.y+.23,ez+fz*.018,.035,.032,.035,C.flower);}
- // Flattened hood: distinct cobra profile in upright position.
- var hood=clamp(snake.headLift*.7+snake.coil*.35,0,1);if(hood>.03){var back=drawnBody(.35);v.box(back.x,back.y+.12,back.z,.44+hood*.53,.44+hood*.21,.19,C.snakeBack,yaw);v.box(back.x,back.y+.10,back.z,.25+hood*.33,.35+hood*.18,.12,C.belly,yaw);}
- if(snake.swallow){var sw=snake.swallow,t=sw.t,progress=clamp((t-.35)/1.48,0,1);if(progress<.94){var px=p.x+fx*(.43-progress*.46),py=p.y-.13-mouth*.3,pz=p.z+fz*(.43-progress*.46);var sc=(1-progress)*.85+.15;v.box(px,py,pz,.32*sc,.23*sc,.40*sc,sw.type==='egg'?C.flower:sw.type==='bird'?C.leaf3:C.rat,yaw);if(sw.type==='rat'){var wriggle=Math.sin(t*17)*(1-progress)*.07;v.box(px+fx*.20,py+wriggle,pz+fz*.20,.18*sc,.15*sc,.18*sc,C.ratLight,yaw);v.box(px-fx*.24,py+wriggle,pz-fz*.24,.10*sc,.06*sc,.35*sc,C.ear,yaw);}
- if(sw.type==='bird'){v.box(px+rx*.17,py,pz+rz*.17,.09*sc,.10*sc,.26*sc,C.leaf2,yaw);v.box(px-rx*.17,py,pz-rz*.17,.09*sc,.10*sc,.26*sc,C.leaf2,yaw);}}var bulge=Math.sin(Math.PI*clamp((t-1)/1.4,0,1));if(bulge>0){var np=drawnBody(Math.min(snake.length*.72,.65+(t-1)*.35));v.box(np.x,np.y,np.z,.32+bulge*.29,.26+bulge*.25,.35+bulge*.22,C.snake,yaw);}}
+function headPosition(){var a=bodyAt(0),st=snake.strike;if(!st)return a;
+ var q=strikeProgress(),endpoint=st.target,arc=Math.sin(Math.PI*q)*.09;
+ return{x:lerp(st.origin.x,endpoint.x,q),y:lerp(st.origin.y,endpoint.y,q)+arc,z:lerp(st.origin.z,endpoint.z,q)};}
+function drawnBody(d){var p=bodyAt(d),st=snake.strike;if(!st)return p;
+ var fall=Math.max(0,1-d/1.20),q=strikeProgress()*fall*fall,from=st.origin,to=st.target;
+ p.x+=(to.x-from.x)*q;p.y+=(to.y-from.y)*q;p.z+=(to.z-from.z)*q;
+ return p;}
+function headModel(v){
+ var p=headPosition(),yaw=snake.strike?snake.strike.yaw:snake.focus?snake.aimYaw:snake.heading,
+ pitch=snake.strike?snake.strike.pitch:snake.focus?snake.aimPitch:0,
+ fx=Math.sin(yaw),fz=Math.cos(yaw),rx=Math.cos(yaw),rz=-Math.sin(yaw),
+ mouth=snake.swallow?(.16+Math.sin(snake.swallow.t*8)*.08):snake.strike?(.16+.14*Math.sin(Math.PI*clamp(snake.strike.t/.66,0,1))):0;
+ var ca=Math.cos(pitch),sa=Math.sin(pitch);
+ function at(right,above,forward){return {x:p.x+rx*right+fx*(-above*sa+forward*ca),y:p.y+above*ca+forward*sa,z:p.z+rz*right+fz*(-above*sa+forward*ca)};}
+ function blob(q,sx,sy,sz,col,ring,side){v.clayBlob(q.x,q.y,q.z,sx,sy,sz,col,yaw,ring,side,pitch);}
+ // Rounded, pitch-aware cranium, snout, articulated lower jaw, nostrils and flush-set eyes.
+ blob(at(0,.025,0),.243,.165,.29,C.snake,8,12);
+ blob(at(0,-.035,.233),.182,.114,.206,C.snake,8,12);
+ blob(at(0,-.145-mouth*.62,.230),.178,.058,.213,C.belly,6,11);
+ blob(at(0,-.073,.407),.050,.029,.063,C.nose,5,9);
+ for(var side of [-1,1]){
+  var ey=at(side*.18,.111,.175);
+  blob(ey,.042,.035,.046,C.snakeBack,6,9);
+  var pupil=at(side*.202,.126,.183);blob(pupil,.025,.026,.029,C.dark,6,9);
+  var gleam=at(side*.209,.141,.195);blob(gleam,.010,.010,.011,C.flower,4,7);
+ }
+ // Sculpted cobra hood with a rounded, continuous silhouette rather than separate block-like flaps.
+ var hood=clamp(snake.headLift*.89+snake.coil*.23,0,1);
+ if(hood>.08){
+  var widest=.18+.21*hood;
+  var hc=at(0,-.30,-.18);
+  blob(hc,widest,.48,.105,C.snakeBack,11,16);
+  var hf=at(0,-.325,-.095);
+  blob(hf,widest*.75,.36,.072,C.snake,10,15);
+  var neck=drawnBody(.54);
+  v.clayBlob(neck.x,neck.y+.09,neck.z,.16,.28,.18,C.snakeBack,yaw,7,11);
+ }
+ if(snake.swallow){var sw=snake.swallow,t=sw.t,progress=clamp((t-.35)/1.48,0,1);
+  if(progress<.94){var prey=at(0,-.13-mouth*.3,.43-progress*.46),px=prey.x,py=prey.y,pz=prey.z,sc=(1-progress)*.85+.15;
+   v.clayBlob(px,py,pz,.22*sc,.17*sc,.28*sc,sw.type==='egg'?C.flower:sw.type==='bird'?C.leaf3:C.rat,yaw,6,10,pitch);
+   if(sw.type==='rat')v.clayBlob(px-fx*.23*ca,py-.23*sa,pz-fz*.23*ca,.055*sc,.045*sc,.21*sc,C.ear,yaw,5,8,pitch);
+  }
+  var bulge=Math.sin(Math.PI*clamp((t-1)/1.4,0,1));if(bulge>0){var np=drawnBody(Math.min(snake.length*.72,.65+(t-1)*.35));v.clayBlob(np.x,np.y,np.z,.18+bulge*.20,.19+bulge*.17,.23+bulge*.19,C.snake,yaw,7,10);}
+ }
 }
-function snakeModel(v){var count=Math.min(92,Math.max(15,Math.floor(snake.length/.095)));for(var i=count-1;i>=0;i--){var d=(i+.5)*snake.length/count,p=drawnBody(d),next=drawnBody(Math.max(0,d-.095)),prev=drawnBody(Math.min(snake.length,d+.095));var radius=.18*(.66+.34*(1-d/snake.length));if(d>snake.length*.84)radius*=clamp((snake.length-d)/(.16*snake.length),.24,1);v.link3(prev,next,radius,i%5===0?C.belly:C.snakeBack);if(i%3===0)v.box(p.x,p.y+.11,p.z,radius*1.7,radius*.65,radius*1.4,C.snake);}headModel(v);}
+// Keep z computation explicit in the procedural hood surface.
+function zval(v){return v;}
+function snakeModel(v){var count=Math.min(92,Math.max(15,Math.floor(snake.length/.095)));for(var i=count-1;i>=0;i--){var d=(i+.5)*snake.length/count,p=drawnBody(d),next=drawnBody(Math.max(0,d-.095)),prev=drawnBody(Math.min(snake.length,d+.095));var radius=.18*(.66+.34*(1-d/snake.length));if(d>snake.length*.84)radius*=clamp((snake.length-d)/(.16*snake.length),.24,1);v.clayLink(prev,next,radius,i%5===0?C.snake:C.snakeBack);}headModel(v);}
 function recordTrail(old){var dy=snake.y-old.y,motion=Math.hypot(snake.x-old.x,dy,snake.z-old.z);snake.travel+=motion;if(motion>.001&&snake.travel-snake.trail[0].s>.054){snake.trail.unshift({x:snake.x,y:snake.y,z:snake.z,s:snake.travel});if(snake.trail.length>800)snake.trail.length=800;}}
 // ----- Voxel rat and live predator awareness simulation -----
 var rat={x:BUR.x,z:BUR.z,heading:0,look:0,age:0,t:0,awareness:0,state:'burrow',gone:false,respawn:0,alertUntil:0};
 function ratMode(s){rat.state=s;rat.t=0;}
-function ratModel(v){if(rat.state==='burrow'||rat.gone)return;var x=rat.x,z=rat.z,a=rat.heading,y=h(x,z),sx=Math.sin(a),sz=Math.cos(a),rx=Math.cos(a),rz=-Math.sin(a),b=Math.sin(rat.age*17)*.035;v.box(x,y+.26+b,z,.44,.30,.68,C.rat,a);v.box(x+sx*.31,y+.27+b,z+sz*.31,.34,.29,.31,C.ratLight,a);
-for(var k of [-1,1]){v.box(x+sx*.37+rx*k*.18,y+.50+b,z+sz*.37+rz*k*.18,.17,.25,.16,C.ear,a);v.box(x+rx*k*.21,y+.1,z+rz*k*.21,.14,.13,.21,C.ratLight,a);v.box(x+sx*.43+rx*k*.115,y+.33+b,z+sz*.43+rz*k*.115,.065,.075,.068,C.dark);}
+function ratModel(v){if(rat.state==='burrow'||rat.gone)return;var x=rat.x,z=rat.z,a=rat.heading,y=h(x,z),sx=Math.sin(a),sz=Math.cos(a),rx=Math.cos(a),rz=-Math.sin(a),b=Math.sin(rat.age*17)*.035;v.clayBlob(x,y+.27+b,z,.26,.20,.37,C.rat,a,7,10);v.clayBlob(x+sx*.31,y+.30+b,z+sz*.31,.19,.16,.19,C.ratLight,a,7,10);
+for(var k of [-1,1]){v.clayBlob(x+sx*.37+rx*k*.18,y+.47+b,z+sz*.37+rz*k*.18,.10,.13,.085,C.ear,a,6,8);v.box(x+rx*k*.21,y+.1,z+rz*k*.21,.14,.13,.21,C.ratLight,a);v.box(x+sx*.43+rx*k*.115,y+.33+b,z+sz*.43+rz*k*.115,.065,.075,.068,C.dark);}
 v.box(x+sx*.56,y+.25+b,z+sz*.56,.095,.08,.08,C.nose,a);for(var i=0;i<5;i++){var tx=x-sx*(.37+i*.20)+Math.cos(i*.6+rat.age*4)*.06,tz=z-sz*(.37+i*.20)+Math.sin(i*.6+rat.age*4)*.06;v.box(tx,y+.19,tz,.10-i*.012,.10-i*.012,.24,C.ear,a);}}
 var bird={x:NEST.x+.26,z:NEST.z-.18,y:NEST.y+.36,state:'perch',t:0,respawn:0};
-function canopyModel(v){if(NEST.eggs>0){for(var j=0;j<NEST.eggs;j++){var a=j*2.5;v.box(NEST.x+Math.cos(a)*.13,NEST.y+.15,NEST.z+Math.sin(a)*.11,.20,.28,.19,C.flower);}}if(bird.state==='gone')return;var x=bird.x,y=bird.y,z=bird.z,phase=Math.sin(simTime*15)*.18;v.box(x,y,z,.37,.26,.46,C.ratLight);v.box(x,y+.12,z-.20,.23,.24,.24,C.rat);v.box(x,y+.07,z-.36,.14,.11,.14,C.flower);v.box(x-.29,y+phase,z,.24,.08,.36,C.leaf3);v.box(x+.29,y-phase,z,.24,.08,.36,C.leaf3);}
+function canopyModel(v){if(NEST.eggs>0){for(var j=0;j<NEST.eggs;j++){var a=j*2.5;v.clayBlob(NEST.x+Math.cos(a)*.13,NEST.y+.15,NEST.z+Math.sin(a)*.11,.12,.17,.11,C.flower,0,6,9);}}if(bird.state==='gone')return;var x=bird.x,y=bird.y,z=bird.z,phase=Math.sin(simTime*15)*.18;v.clayBlob(x,y,z,.25,.18,.30,C.ratLight,0,6,10);v.clayBlob(x,y+.12,z-.20,.17,.16,.17,C.rat,0,6,9);v.clayBlob(x,y+.07,z-.36,.09,.06,.08,C.flower,0,5,8);v.clayBlob(x-.23,y+phase,z,.17,.055,.22,C.leaf3,-.25,5,9);v.clayBlob(x+.23,y-phase,z,.17,.055,.22,C.leaf3,.25,5,9);}
 function updateBird(dt){bird.t+=dt;if(bird.state==='gone'){if(simTime>bird.respawn){bird.state='perch';bird.x=NEST.x+.26;bird.z=NEST.z-.18;bird.y=NEST.y+.36;}return;}var hd=headPosition(),dd=Math.hypot(hd.x-bird.x,hd.y-bird.y,hd.z-bird.z);if(bird.state==='perch'&&dd<2.7){bird.state='fly';bird.t=0;say('The bird takes flight!',1.4);}if(bird.state==='fly'){bird.y+=dt*1.75;bird.x+=dt*1.6;bird.z-=dt*.6;if(bird.t>3){bird.state='gone';bird.respawn=simTime+12;}}}
 function normAngle(a){return Math.atan2(Math.sin(a),Math.cos(a));}
 function obstacleSight(ax,az,bx,bz){for(var i=0;i<solid.length;i++){var c=solid[i],dx=bx-ax,dz=bz-az,den=dx*dx+dz*dz||1,t=clamp(((c.x-ax)*dx+(c.z-az)*dz)/den,0,1),qx=ax+t*dx,qz=az+t*dz;if(Math.hypot(qx-c.x,qz-c.z)<c.r*.80)return true;}return false;}
-function coverAt(x,z){var covered=0;for(var i=0;i<bush.length;i++)if(Math.hypot(x-bush[i].x,z-bush[i].z)<bush[i].r*.85)covered=Math.max(covered,.80);return covered;}
+function coverAt(x,z){var covered=0;for(var i=0;i<bush.length;i++)if(Math.hypot(x-bush[i].x,z-bush[i].z)<bush[i].r*.85)covered=Math.max(covered,.90);return covered;}
+// Beer-Lambert style attenuation through foliage volume, with eye/body height gating.
+function foliageVisibility(ax,ay,az,bx,by,bz){
+ var dx=bx-ax,dz=bz-az,dist=Math.hypot(dx,dz)||.001,opacity=0;
+ for(var i=0;i<bush.length;i++){var b=bush[i],t=clamp(((b.x-ax)*dx+(b.z-az)*dz)/(dist*dist),0,1),px=ax+dx*t,pz=az+dz*t;
+ var perp=Math.hypot(px-b.x,pz-b.z);if(perp>=b.r)continue;
+ var rayY=lerp(ay,by,t),low=b.base+.12,high=b.base+b.height;
+ if(rayY<low||rayY>high)continue;
+ var span=2*Math.sqrt(Math.max(0,b.r*b.r-perp*perp)),heightFactor=clamp(Math.min(rayY-low,high-rayY)/.19,0,1);
+ opacity+=span*b.opacity*heightFactor;
+ }
+ return Math.exp(-opacity);
+}
 function moveRat(tx,tz,speed,dt){var dx=tx-rat.x,dz=tz-rat.z,d=Math.hypot(dx,dz);if(d<.32)return true;var ideal=Math.atan2(dx,dz);rat.heading+=clamp(normAngle(ideal-rat.heading),-4.5*dt,4.5*dt);var step=Math.min(d,speed*dt);rat.x+=Math.sin(rat.heading)*step;rat.z+=Math.cos(rat.heading)*step;return false;}
 function resetRat(){rat.x=BUR.x;rat.z=BUR.z;rat.heading=.4;rat.look=0;rat.awareness=0;rat.gone=false;rat.age=0;ratMode('burrow');}
 function updateRat(dt){rat.t+=dt;rat.age+=dt;if(rat.gone){if(simTime>rat.respawn)resetRat();return;}if(rat.state==='burrow'){if(rat.t>3)ratMode('emerge');return;}
-var dx=snake.x-rat.x,dz=snake.z-rat.z,dist=Math.hypot(dx,dz),exposures=[],det=0,close=dist<1.3?.46:0;
-for(var bi=0;bi<7;bi++){var bp=drawnBody(snake.length*bi/6),dd=Math.hypot(bp.x-rat.x,bp.z-rat.z),theta=Math.atan2(bp.x-rat.x,bp.z-rat.z),ang=Math.abs(normAngle(theta-rat.heading-rat.look));if(ang>=.84||dd>=6+snake.caught*.22||obstacleSight(rat.x,rat.z,bp.x,bp.z))continue;var hidden=coverAt(bp.x,bp.z)*(bp.y<h(bp.x,bp.z)+.75?.94:.42),exposure=1-hidden*(sneaking?1:.83);exposures.push(exposure);det=Math.max(det,exposure*(.14+Math.max(0,1-dd/7)*.6+Math.abs(snake.speed)*(sneaking?.035:.18)));}
-var sight=exposures.length>0;
-rat.awareness=clamp(rat.awareness+(det+close)*dt*(.85+snake.caught*.13)-dt*(sight?.035:.115),0,1);
+var dx=snake.x-rat.x,dz=snake.z-rat.z,dist=Math.hypot(dx,dz),det=0,sight=false;
+ var eyeY=h(rat.x,rat.z)+.36,maxSeen=0;
+ for(var bi=0;bi<17;bi++){
+  var bp=drawnBody(snake.length*bi/16),dd=Math.hypot(bp.x-rat.x,bp.z-rat.z),theta=Math.atan2(bp.x-rat.x,bp.z-rat.z),ang=Math.abs(normAngle(theta-rat.heading-rat.look));
+  if(ang>=.84||dd>=6+snake.caught*.22||obstacleSight(rat.x,rat.z,bp.x,bp.z))continue;
+  var trans=foliageVisibility(rat.x,eyeY,rat.z,bp.x,bp.y,bp.z),exposure=trans*(.2+.8*clamp((bp.y-h(bp.x,bp.z)-.13)/.38,0,1));
+  maxSeen=Math.max(maxSeen,exposure);
+  if(exposure>.10){sight=true;det=Math.max(det,exposure*(.12+Math.max(0,1-dd/7)*.65+Math.abs(snake.speed)*(sneaking?.03:.15)));}
+ }
+ // Hearing is not omniscient: hidden and motionless means no proximity alert.
+ var heard=dist<2.1?Math.max(0,2.1-dist)/2.1*Math.abs(snake.speed)*(sneaking?.025:.14):0;
+ var disturbance=snake.strike&&dist<3?.12:0;
+ rat.awareness=clamp(rat.awareness+(det+heard+disturbance)*dt*(.85+snake.caught*.13)-dt*(sight?.05:.22),0,1);
+ window.__hunter.visibility={exposure:+maxSeen.toFixed(3),hearing:+heard.toFixed(3),awareness:+rat.awareness.toFixed(3),cover:coverAt(snake.x,snake.z)};
 if(rat.awareness>.81&&rat.state!=='flee'){ratMode('flee');say('Spotted! The rat is escaping!',2.4);}else if(rat.awareness>.37&&rat.state!=='flee'&&rat.state!=='alert'&&rat.state!=='burrow'){ratMode('alert');say('The rat is suspicious — take cover!',2.6);}
 var searching=rat.state==='alert';rat.look=searching?Math.sin(rat.age*5)*.63:Math.sin(rat.age*1.4)*.25;
 switch(rat.state){case'emerge':if(moveRat(BUR.x+1.8,BUR.z+1.4,.87,dt))ratMode('forage');break;case'forage':if(moveRat(FOOD.x,FOOD.z,1.04,dt))ratMode('eat');break;case'eat':if(rat.t>4.5)ratMode('return');break;case'return':if(moveRat(BUR.x,BUR.z,1.25,dt))ratMode('burrow');break;case'alert':if(rat.awareness<.18){ratMode('forage');say('The rat relaxes and resumes feeding',1.6);}break;case'flee':if(moveRat(BUR.x,BUR.z,3.5+snake.caught*.08,dt)){rat.awareness=0;ratMode('burrow');rat.t=-.5;}}}
@@ -201,14 +309,64 @@ function pause(){if(window.__hunter.phase==='play'){window.__hunter.phase='pause
 window.hunterPause=pause;window.__hunterPlay=function(){playing=true;document.getElementById('settings').classList.remove('open');say('Cobra awake · Focus to coil, Climb beside a tree!',3);};
 window.hunterSneak=function(){sneaking=!sneaking;document.getElementById('sneak').classList.toggle('pressed',sneaking);say(sneaking?'Sneak ON · head stays low outside Focus':'Sneak OFF',1.5);};
 window.hunterSense=function(){sense=true;var dist=Math.hypot(snake.x-rat.x,snake.z-rat.z);say('Rat '+dist.toFixed(1)+'m · '+rat.state.toUpperCase()+' | Nest on the tree near the start',2.4);};
-window.hunterFocus=function(){if(!playing||snake.strike||snake.swallow)return;if(snake.climb){say('Focus on climbing surfaces uses an anchored pose',1.6);}snake.focus=!snake.focus;snake.aimYaw=snake.heading;snake.aimPitch=snake.climb?-.06:0;document.getElementById('focus').classList.toggle('pressed',snake.focus);say(snake.focus?'FOCUS: coil and aim head with joystick':'Move to unfold and slither',2);};
+window.hunterFocus=function(){if(!playing||snake.strike||snake.swallow)return;if(snake.climb){say('Focus on climbing surfaces uses an anchored pose',1.6);}snake.focus=!snake.focus;snake.aimYaw=snake.heading;snake.aimPitch=snake.climb?-.06:-.58;document.getElementById('focus').classList.toggle('pressed',snake.focus);say(snake.focus?'FOCUS: coil and aim head with joystick':'Move to unfold and slither',2);};
 function findClimb(){var best=null,bd=99;for(var i=0;i<climbables.length;i++){var a=climbables[i],d=Math.hypot(snake.x-a.x,snake.z-a.z);if(a.type!=='branch'&&d<Math.max(1.35,a.r+1.05)&&d<bd){best=a;bd=d;}}return best;}
 window.hunterClimb=function(){if(!playing||snake.strike||snake.swallow)return;if(snake.climb){var cc=snake.climb;if(cc.surface.type==='tree'&&Math.hypot(cc.surface.x-3,cc.surface.z-7)<.8&&cc.alt>2.35){cc.surface=climbables.find(a=>a.type==='branch');cc.branchT=0;snake.focus=false;say('Onto the nest branch — push joystick forward',2.4);return;}if(cc.surface.type==='branch'){cc.surface=climbables.find(a=>a.type==='tree'&&Math.hypot(a.x-3,a.z-7)<.8);cc.alt=2.9;cc.ang=0;say('Returned to the tree trunk',1.5);return;}snake.climb=null;snake.y=h(snake.x,snake.z)+.24;snake.focus=false;document.getElementById('focus').classList.remove('pressed');say('Descending to the ground',1.6);return;}var a=findClimb();if(!a){say('Approach the big tree, log, or rough wall to climb',2);return;}var ang=Math.atan2(snake.z-a.z,snake.x-a.x);snake.climb={surface:a,ang:ang,alt:Math.max(.25,snake.y-h(a.x,a.z)),attach:0,logT:0,branchT:0};snake.focus=false;snake.coil=0;document.getElementById('focus').classList.remove('pressed');say('CLIMB: joystick up/down ascends, left/right rotates',3);};
 function attackTargetPosition(kind){if(kind==='rat')return{x:rat.x,y:h(rat.x,rat.z)+.30,z:rat.z};if(kind==='egg')return{x:NEST.x,y:NEST.y+.18,z:NEST.z};return{x:bird.x,y:bird.y,z:bird.z};}
 function pointSegmentDistance(p,a,b){var dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=dx*dx+dy*dy+dz*dz||.0001,t=clamp(((p.x-a.x)*dx+(p.y-a.y)*dy+(p.z-a.z)*dz)/L,0,1);return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t,p.z-a.z-dz*t);}
-window.hunterStrike=function(){if(!playing||snake.strike||snake.swallow||cooldown>0)return;var yaw=snake.focus?snake.aimYaw:snake.heading,pitch=snake.focus?snake.aimPitch:0;if(!snake.focus&&!rat.gone&&rat.state!=='burrow'&&!snake.climb){var theta=Math.atan2(rat.x-snake.x,rat.z-snake.z),delta=normAngle(theta-yaw);yaw+=clamp(delta,-.28,.28)+Math.sin(simTime*11)*.065;}snake.strike={t:0,reach:2.45,yaw:yaw,pitch:pitch,prev:headPosition(),hit:false};cooldown=.78;say('LUNGE!',.7);};
+var MAX_REACH=2.45;
+function groundStrikePoint(yaw,origin,limit){
+ var ray={x:Math.sin(yaw),z:Math.cos(yaw)},end={x:origin.x+ray.x*limit,z:origin.z+ray.z*limit};
+ return{x:end.x,y:h(end.x,end.z)+.30,z:end.z};
+}
+function aimImpact(){
+ var origin=bodyAt(0),dir=aimVector(),steps=34,max=MAX_REACH,prev=origin;
+ // Aim ray intersects actual terrain. If no intersection, show a projected max-reach marker.
+ for(var i=1;i<=steps;i++){var dist=i*max/steps,p={x:origin.x+dir.x*dist,y:origin.y+dir.y*dist,z:origin.z+dir.z*dist};
+  if(p.y<=h(p.x,p.z)+.28)return{x:p.x,y:h(p.x,p.z)+.30,z:p.z,dist:dist,intersects:true};prev=p;}
+ return{x:prev.x,y:prev.y,z:prev.z,dist:max,intersects:false};
+}
+function strikeTarget(){
+ var origin=bodyAt(0),yaw=snake.focus?snake.aimYaw:snake.heading,pitch=snake.focus?snake.aimPitch:-.34;
+ if(snake.focus){var landing=aimImpact();return{origin:origin,target:{x:landing.x,y:landing.y,z:landing.z},yaw:yaw,pitch:pitch};}
+ // Normal quick strike: limited predictive assistance toward prey, with an explainable miss offset.
+ var target=groundStrikePoint(yaw,origin,MAX_REACH*.90);
+ if(!rat.gone&&rat.state!=='burrow'&&!snake.climb){var theta=Math.atan2(rat.x-origin.x,rat.z-origin.z),delta=normAngle(theta-yaw),distance=Math.hypot(rat.x-origin.x,rat.z-origin.z);
+  if(Math.abs(delta)<.61&&distance<MAX_REACH+.20){
+   var assistYaw=yaw+clamp(delta,-.28,.28)+Math.sin(simTime*9.1)*.08;
+   var reach=Math.min(MAX_REACH,distance+Math.min(.10,rat.age*.002));
+   target=groundStrikePoint(assistYaw,origin,reach);yaw=assistYaw;
+  }
+ }
+ return{origin:origin,target:target,yaw:yaw,pitch:pitch};
+}
+window.hunterStrike=function(){
+ if(!playing||snake.strike||snake.swallow||cooldown>0)return;
+ var t=strikeTarget(),reach=Math.hypot(t.target.x-t.origin.x,t.target.y-t.origin.y,t.target.z-t.origin.z);
+ snake.strike={t:0,reach:reach,yaw:t.yaw,pitch:t.pitch,origin:t.origin,target:t.target,prev:t.origin,hit:false};
+ cooldown=.78;say('LUNGE!',.7);
+};
+function buildReach(v){
+ var reachLabel=document.getElementById('reachHint');if(reachLabel&&!snake.focus)reachLabel.style.display='none';
+ if(!snake.focus&&! (snake.headLift>.60&&!snake.climb))return;
+ var o=bodyAt(0),yaw=snake.focus?snake.aimYaw:snake.heading,steps=22,r=MAX_REACH;
+ // arc showing cobra's horizontal range; subdued in idle and clear in Focus
+ for(var i=0;i<steps;i++){var a=yaw-.92+i*1.84/steps,b=yaw-.92+(i+1)*1.84/steps;
+  var x1=o.x+Math.sin(a)*r,z1=o.z+Math.cos(a)*r,x2=o.x+Math.sin(b)*r,z2=o.z+Math.cos(b)*r;
+  var ya=h(x1,z1)+.14,yb=h(x2,z2)+.14;
+  v.quad([x1,ya,z1],[x2,yb,z2],[x2+.065,yb,z2+.065],[x1+.065,ya,z1+.065],[0,1,0],C.amber);
+ }
+ if(!snake.focus)return;
+ var point=aimImpact(),p={x:point.x,y:point.intersects?h(point.x,point.z)+.16:point.y,z:point.z},rad=.19;
+ // Floating indicator means aim is above terrain; same 3D marker works for elevated targets.
+ for(var i=0;i<18;i++){var a=i*TAU/18,b=(i+1)*TAU/18;
+  v.quad([p.x+Math.cos(a)*rad,p.y,p.z+Math.sin(a)*rad],[p.x+Math.cos(b)*rad,p.y,p.z+Math.sin(b)*rad],[p.x+Math.cos(b)*(rad+.032),p.y,p.z+Math.sin(b)*(rad+.032)],[p.x+Math.cos(a)*(rad+.032),p.y,p.z+Math.sin(a)*(rad+.032)],[0,1,0],C.amber);
+ }
+ window.__hunter.aimImpact={x:+p.x.toFixed(2),y:+p.y.toFixed(2),z:+p.z.toFixed(2),ground:point.intersects};
+ var label=document.getElementById('reachHint');if(label){label.style.display='none';label.textContent='STRIKE · '+point.dist.toFixed(1)+'m '+(point.intersects?'· GROUND':'· AIR / ELEVATED');}
+}
 function capturePrey(type){snake.strike.hit=true;snake.strike=null;snake.swallow={type:type,t:0};snake.cinematic={t:0,type:type};document.getElementById('game').classList.add('cinematic');snake.caught++;snake.length+=type==='egg'?.16:type==='bird'?.37:.31;document.getElementById('caught').textContent=snake.caught;document.getElementById('length').textContent=snake.length.toFixed(1)+'m';if(type==='rat'){rat.gone=true;rat.respawn=simTime+7;}else if(type==='egg'){NEST.eggs=Math.max(0,NEST.eggs-1);}else{bird.state='gone';bird.respawn=simTime+15;}say('CAPTURE! Watch the swallowing cinematic',2.3);}
-function checkLunge(){if(!snake.strike)return;var curr=headPosition(),prev=snake.strike.prev||curr;for(var type of ['rat','bird','egg']){if(type==='rat'&&(rat.gone||rat.state==='burrow')||type==='bird'&&bird.state!=='perch'||type==='egg'&&NEST.eggs<1)continue;var p=attackTargetPosition(type),r=type==='egg'?.37:type==='bird'?.48:.43;if(pointSegmentDistance(p,prev,curr)<r){capturePrey(type);return;}}snake.strike.prev=curr;}
+function checkLunge(){if(!snake.strike)return;var curr=headPosition(),prev=snake.strike.prev||curr;if(snake.strike.t>.355){snake.strike.prev=curr;return;}for(var type of ['rat','bird','egg']){if(type==='rat'&&(rat.gone||rat.state==='burrow')||type==='bird'&&bird.state!=='perch'||type==='egg'&&NEST.eggs<1)continue;var p=attackTargetPosition(type),r=type==='egg'?.37:type==='bird'?.48:.43;if(pointSegmentDistance(p,prev,curr)<r){capturePrey(type);return;}}snake.strike.prev=curr;}
 var stick=document.getElementById('stick'),nub=document.getElementById('nub'),joyId=null;
 function steer(e){var r=stick.getBoundingClientRect(),m=Math.min(r.width,r.height)*.33,x=(e.clientX-r.left-r.width/2)/m,y=(e.clientY-r.top-r.height/2)/m,len=Math.max(1,Math.hypot(x,y));joystick.x=x/len;joystick.y=y/len;nub.style.transform='translate('+(joystick.x*m)+'px,'+(joystick.y*m)+'px)';}
 function stopJoy(){joyId=null;joystick.x=joystick.y=0;nub.style.transform='translate(0px,0px)';}
@@ -217,7 +375,7 @@ window.addEventListener('keydown',function(e){if(['ArrowUp','ArrowDown','ArrowLe
 function updateSnake(dt){var forward=clamp(-joystick.y+(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?.6:0),-1,1),turn=clamp((invertX?1:-1)*joystick.x+(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0),-1,1);
  if(snake.swallow){snake.swallow.t+=dt;if(snake.cinematic){snake.cinematic.t+=dt;if(snake.cinematic.t>2.55){snake.swallow=null;snake.cinematic=null;document.getElementById('game').classList.remove('cinematic');say('Swallowed! Your cobra has grown.',2);}}return;}
  if(snake.strike){snake.strike.t+=dt;checkLunge();if(snake.strike&&snake.strike.t>.66){snake.strike=null;rat.awareness=Math.max(rat.awareness,.7);say('Missed — the cobra recoils',1.6);}}
- if(snake.focus){snake.speed=lerp(snake.speed,0,Math.min(1,dt*9));snake.coil=lerp(snake.coil,1,Math.min(1,dt*2.8));snake.aimYaw+=turn*dt*1.60;snake.aimPitch=clamp(snake.aimPitch+forward*dt*1.18,-.64,.70);snake.headLift=lerp(snake.headLift,.95,Math.min(1,dt*4));return;}
+ if(snake.focus){snake.speed=lerp(snake.speed,0,Math.min(1,dt*9));snake.coil=lerp(snake.coil,1,Math.min(1,dt*2.8));snake.aimYaw+=turn*dt*1.35;snake.aimPitch=clamp(snake.aimPitch+forward*dt*1.1,-1.00,.82);snake.headLift=lerp(snake.headLift,.95,Math.min(1,dt*4));return;}
  snake.coil=lerp(snake.coil,0,Math.min(1,dt*3));
  if(snake.climb){var c=snake.climb,src=c.surface,up=forward*(sneaking?.5:1.3)*dt; c.alt=clamp(c.alt+up,.18,src.height-.08);c.ang+=turn*dt*1.5;var ox=src.type==='wall'?.56:src.type==='branch'?.48:src.r+.42;
  var old={x:snake.x,y:snake.y,z:snake.z};c.attach=clamp((c.attach||0)+dt*2.5,0,1);
@@ -228,17 +386,27 @@ function updateSnake(dt){var forward=clamp(-joystick.y+(keys.KeyW||keys.ArrowUp?
  var maximum=sneaking||keys.ShiftLeft?.86:2.2,target=maximum*forward;snake.speed=lerp(snake.speed,target,Math.min(1,dt*7));snake.heading+=turn*dt*2.15*(Math.abs(forward)<.05?.55:1);var old={x:snake.x,y:snake.y,z:snake.z};var nx=clamp(snake.x+Math.sin(snake.heading)*snake.speed*dt,-20.5,20.5),nz=clamp(snake.z+Math.cos(snake.heading)*snake.speed*dt,-20.5,20.5);
  for(var i=0;i<solid.length;i++){var o=solid[i],dx=nx-o.x,dz=nz-o.z,dd=Math.hypot(dx,dz),min=o.r+.28;if(dd<min){nx=o.x+dx/(dd||1)*min;nz=o.z+dz/(dd||1)*min;}}
  snake.x=nx;snake.z=nz;snake.y=h(nx,nz)+.24;snake.aimYaw=snake.heading;snake.aimPitch=0;recordTrail(old);snake.headLift=lerp(snake.headLift,Math.abs(snake.speed)<.10&&!sneaking?.89:0,Math.min(1,dt*3.8));}
-function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0){noticeTime-=dt;if(noticeTime<=0)document.getElementById('info').classList.remove('show');}updateSnake(dt);updateRat(dt);updateBird(dt);var p=rat.awareness*100;document.getElementById('meterfill').style.width=p.toFixed(0)+'%';document.getElementById('meterfill').style.background=p>80?'#e96d5f':p>35?'#f4c75d':'#81cd86';document.getElementById('ratState').textContent=rat.state==='burrow'?'IN BURROW':rat.state==='flee'?'FLEEING':p>80?'ALARMED':p>35?'SUSPICIOUS':'CALM';document.getElementById('stance').textContent=snake.swallow?'FEEDING':snake.strike?'LUNGING':snake.focus?'FOCUS · COILED':snake.climb?'CLIMB · '+snake.climb.surface.type.toUpperCase():snake.headLift>.5?'COBRA READY':'SLITHER';}
+function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0){noticeTime-=dt;if(noticeTime<=0)document.getElementById('info').classList.remove('show');}updateSnake(dt);updateRat(dt);updateBird(dt);var p=rat.awareness*100;document.getElementById('meterfill').style.width=p.toFixed(0)+'%';document.getElementById('meterfill').style.background=p>80?'#e96d5f':p>35?'#f4c75d':'#81cd86';document.getElementById('ratState').textContent=rat.state==='burrow'?'IN BURROW':rat.state==='flee'?'FLEEING':p>80?'ALARMED':p>35?'SUSPICIOUS':'CALM';document.getElementById('stance').textContent=snake.swallow?'FEEDING':snake.strike?'LUNGING':snake.focus?'FOCUS · TORCH AIM':snake.climb?'CLIMB · '+snake.climb.surface.type.toUpperCase():snake.headLift>.5?'COBRA READY':'SLITHER';}
 function render(t){try{requestAnimationFrame(render);var dt=Math.min(.045,Math.max(0,(t-lastT)/1000));lastT=t;if(playing){acc+=dt;var steps=0;while(acc>=1/60&&steps++<4){update(1/60);acc-=1/60;}}
  var head=headPosition(),f=aimVector(),wanted,target;
  if(snake.cinematic){var side=[Math.cos(snake.aimYaw),-Math.sin(snake.aimYaw)];wanted=[head.x+side[0]*1.95-f.x*.55,head.y+.82,head.z+side[1]*1.95-f.z*.55];target=[head.x,head.y,head.z];}
- else if(snake.focus){wanted=[head.x-f.x*1.48,head.y+.43,head.z-f.z*1.48];target=[head.x+f.x*4.0,head.y+f.y*4.0,head.z+f.z*4.0];}
+ else if(snake.focus){var cameraYaw=snake.aimYaw; var portrait=heightPx>width*1.28,dist=portrait?4.15:2.70,above=portrait?1.85:1.24,lateral=portrait?.52:.88;
+ wanted=[head.x-Math.sin(cameraYaw)*dist+Math.cos(cameraYaw)*lateral,head.y+above,head.z-Math.cos(cameraYaw)*dist-Math.sin(cameraYaw)*lateral];target=[head.x+f.x*3.7,head.y+f.y*3.7-.12,head.z+f.z*3.7];}
  else if(snake.climb){wanted=[head.x-f.x*3.5,head.y+1.65,head.z-f.z*3.5];target=[head.x,head.y+.4,head.z];}
  else{wanted=[snake.x-f.x*4.2,h(snake.x,snake.z)+2.68,snake.z-f.z*4.2];target=[head.x+f.x*2.5,head.y+.12,head.z+f.z*2.5];}
  var follow=1-Math.exp(-dt*(snake.cinematic?6:snake.focus?5.5:4.2));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
- var vp=mul(projection(snake.focus?1.05:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.focus?'focus':snake.climb?'climb':snake.swallow?'capture':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
+ var vp=mul(projection(snake.focus?1.05:1.15,width/heightPx,.09,120),viewmatrix(eye,look));
+ var reticle=document.getElementById('aimReticle');
+ if(snake.focus&&!snake.cinematic&&!snake.strike){
+  var impact=aimImpact(),px=impact.x,py=impact.y,pz=impact.z;
+  var tx=vp[0]*px+vp[4]*py+vp[8]*pz+vp[12],ty=vp[1]*px+vp[5]*py+vp[9]*pz+vp[13],tw=vp[3]*px+vp[7]*py+vp[11]*pz+vp[15];
+  if(tw>.05){var rect=canvas.getBoundingClientRect();reticle.style.display='block';reticle.style.left=(rect.left+rect.width*(.5+tx/tw*.5))+'px';reticle.style.top=(rect.top+rect.height*(.5-ty/tw*.5))+'px';
+  document.getElementById('aimRange').textContent=(impact.intersects?'IMPACT ':'AIM ')+impact.dist.toFixed(1)+'m / REACH '+MAX_REACH.toFixed(1)+'m';}
+  else reticle.style.display='none';
+ }else reticle.style.display='none';
+ gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);upload(radarMesh,d);d=new Geometry();buildReach(d);upload(reachMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);draw(reachMesh,.93);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.staticVertices=staticMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
 // Initial render frame and intro: the scene is visible behind the start panel.
-eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
+eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='0.8-dev.2';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
 };
 // Lightweight startup — no rendering, terrain generation or WebGL context creation until Start Hunt is pressed.
 window.__hunter.bootstrapped=true;document.getElementById('bootStatus').textContent='Ready. Tap START HUNT to load the offline 3D world.';
