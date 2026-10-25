@@ -132,7 +132,7 @@ var width=0,heightPx=0;resize=function(){var w=Math.max(1,innerWidth),h=Math.max
 window.addEventListener('resize',resize);resize();
 }catch(e){window.hunterError(e.message||e);return;}
 // ----- Authored hunting landscape, decorated with reproducible voxels -----
-var g=new Geometry(),solid=[],bush=[],climbables=[],W=22,BUR={x:-5.8,z:-8.4},FOOD={x:3.1,z:-1.9};
+var treeMeshes=[],g=new Geometry(),solid=[],bush=[],climbables=[],W=22,BUR={x:-5.8,z:-8.4},FOOD={x:3.1,z:-1.9};
 function addSolid(x,z,r){solid.push({x:x,z:z,r:r});}
 function addBush(x,z,r){bush.push({x:x,z:z,r:r,base:h(x,z),height:1.30,opacity:2.8});}
 function vegColor(i){return [C.leaf,C.leaf2,C.leaf3][i%3];}
@@ -149,20 +149,20 @@ function addBranch(a,b,r,parent,seed){
  for(var k=0;k<3;k++){var t=.35+k*.23,px=lerp(a.x,b.x,t),py=lerp(a.y,b.y,t),pz=lerp(a.z,b.z,t);g.clayBlob(px,py+r*.32,pz,r*.55,r*.22,r*.55,k%2?C.wood:C.wood2,0,5,8);}
 }
 function tree(x,z,r,seed){
- var y=h(x,z),tall=6.4+hash(seed,4,1)*2.7,trunk=r*.43;
+ var vertexStart=g.v.length;var y=h(x,z),tall=10.2+hash(seed,4,1)*4.1,trunk=r*.69;
  g.clayTrunk(x,y,z,trunk,tall,C.wood);
  var root={x:x,y:y,z:z},top={x:x,y:y+tall,z:z};
  var treeSurface={type:'tree',x:x,z:z,r:trunk,height:tall,top:y+tall,branches:[]};
  for(var i=0;i<5;i++){
-  var ang=i*TAU/5+hash(seed,i,1)*.55,at=y+tall*(.38+i*.09),len=r*(2.25+hash(seed,i,17)*1.3);
+  var ang=i*TAU/5+hash(seed,i,1)*.55,at=y+tall*(.38+i*.09),len=r*(3.4+hash(seed,i,17)*1.7);
   var a={x:x,y:at,z:z},b={x:x+Math.cos(ang)*len,y:at+.38+hash(seed,i,9)*.42,z:z+Math.sin(ang)*len};
-  addBranch(a,b,trunk*(.60-i*.065),treeSurface,seed+i);treeSurface.branches.push(branches[branches.length-1]);
+  addBranch(a,b,trunk*(.98-i*.085),treeSurface,seed+i);treeSurface.branches.push(branches[branches.length-1]);
   g.clayBlob(b.x,b.y+.55,b.z,r*.78,r*.77,r*.74,[C.leaf,C.leaf2,C.leaf3][i%3],0,7,10);
  }
  g.clayBlob(x,y+tall+.82,z,r*1.48,r*1.45,r*1.35,C.leaf,0,8,12);
  g.clayBlob(x+r*.6,y+tall+.30,z-r*.5,r*1.05,r*.92,r*.96,C.leaf2,0,7,11);
  addSolid(x,z,r*.66);climbables.push(treeSurface);
- return treeSurface;
+ var part=new Geometry();part.v=g.v.splice(vertexStart);part.count=part.v.length/9;var treeMesh=mesh(false);upload(treeMesh,part);treeMeshes.push({mesh:treeMesh,x:x,z:z,r:trunk,height:tall,base:y});return treeSurface;
 }
 // Border forest frame plus featured large tree; ensure open playable central corridor.
 for(var i=0;i<17;i++){var a=i*2.399,r=17+hash(i,4,2)*5.0,x=Math.cos(a)*r,z=Math.sin(a)*r;tree(x,z,.85+hash(i,7,8)*.4,i+30);}
@@ -410,7 +410,7 @@ function updateSnake(dt){var forward=clamp(-joystick.y+(keys.KeyW||keys.ArrowUp?
    var rr=src.r+.14;snake.x=src.x+Math.cos(c.ang)*rr;snake.z=src.z+Math.sin(c.ang)*rr;snake.y=h(src.x,src.z)+c.alt;
    snake.heading+=normAngle(c.ang+Math.PI*.5-snake.heading)*(1-Math.exp(-dt*7));
    var branch=closestBranch(src,c.alt,c.ang);
-   if(branch&&forward>.55&&Math.abs(c.alt-(branch.a.y-h(src.x,src.z)))<.12){c.surface=branch;c.branchT=0;c.branchSide=0;}
+   if(branch&&forward>.55&&Math.abs(c.alt-(branch.a.y-h(src.x,src.z)))<.20){c.surface=branch;c.branchT=0;c.branchSide=0;}
    if(c.alt<=.30&&forward<-.05){snake.climb=null;snake.y=h(snake.x,snake.z)+.24;}
   }else if(src.type==='log'){
    c.logT=clamp(c.logT+forward*velocity,-1.9,1.9);snake.x=src.x+c.logT*Math.cos(-.45);snake.z=src.z-c.logT*Math.sin(-.45);snake.y=h(snake.x,snake.z)+.95;
@@ -438,9 +438,9 @@ function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0
  // Select a clear orbit candidate; use a persistent angle to prevent camera flip jitter.
  if(!snake.cinematic&&!snake.focus){if(camMode==='wide'){wanted=[head.x-f.x*5.4,head.y+2.8,head.z-f.z*5.4];}else if(camMode==='top'){wanted=[head.x+.01,head.y+7.5,head.z+1.2];}else if(camMode==='side'){wanted=[head.x+Math.cos(snake.heading)*4,head.y+1.7,head.z-Math.sin(snake.heading)*4];}var radius=Math.hypot(wanted[0]-head.x,wanted[2]-head.z),base=Math.atan2(wanted[0]-head.x,wanted[2]-head.z),best=base,bestScore=-1e9;for(var ci=-5;ci<=5;ci++){var ang=base+ci*.27,xx=head.x+Math.sin(ang)*radius,zz=head.z+Math.cos(ang)*radius,score=-Math.abs(ci)*.09;for(var tree of climbables){if(tree.type!=='tree')continue;var dx=xx-head.x,dz=zz-head.z,den=dx*dx+dz*dz||1,t=clamp(((tree.x-head.x)*dx+(tree.z-head.z)*dz)/den,0,1),perp=Math.hypot(head.x+dx*t-tree.x,head.z+dz*t-tree.z);if(t>.08&&t<.95&&perp<tree.r+.42&&head.y<tree.top+.8)score-=5*(1-perp/(tree.r+.42));}score-=Math.abs(normAngle(ang-(window.__hunter.cameraOrbit||base)))*.65;if(score>bestScore){bestScore=score;best=ang;}}window.__hunter.cameraOrbit=best;wanted[0]=head.x+Math.sin(best)*radius;wanted[2]=head.z+Math.cos(best)*radius;wanted[1]=Math.max(wanted[1],h(wanted[0],wanted[2])+1.0);}
  var follow=snake.focus?1:1-Math.exp(-dt*(snake.cinematic?6:3.0));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
- var vp=mul(projection(snake.focus?1.25:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);extraRatModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
+ var vp=mul(projection(snake.focus?1.25:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);for(var tm of treeMeshes){var dx=eye[0]-head.x,dz=eye[2]-head.z,den=dx*dx+dz*dz||1,t=clamp(((tm.x-head.x)*dx+(tm.z-head.z)*dz)/den,0,1),perp=Math.hypot(head.x+dx*t-tm.x,head.z+dz*t-tm.z);var blocked=t>.04&&t<.96&&perp<tm.r+.55&&head.y<tm.base+tm.height;var opacity=blocked?.22:1;if(blocked){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);}draw(tm.mesh,opacity);if(blocked){gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);}}var d=new Geometry();snakeModel(d);ratModel(d);extraRatModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
 // Initial render frame and intro: the scene is visible behind the start panel.
-eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.4-surface-traverse';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
+eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.5-giant-tree-visibility';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
 };
 // Lightweight startup — no rendering, terrain generation or WebGL context creation until Start Hunt is pressed.
 window.__hunter.bootstrapped=true;document.getElementById('bootStatus').textContent='Ready. Tap START HUNT to load the offline 3D world.';
