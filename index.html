@@ -140,47 +140,19 @@ function vegColor(i){return [C.leaf,C.leaf2,C.leaf3][i%3];}
 for(var x=-W;x<W;x+=.58)for(var z=-W;z<W;z+=.58){var x1=Math.min(W,x+.58),z1=Math.min(W,z+.58);var t=noise(x*.24,z*.24,9),pc=hash(x*12|0,z*12|0,11);var col=t<.33?C.grass:pc<.12?C.ground:t>.72?C.grass2:C.moss;g.plane([x,h(x,z),z],[x,h(x,z1),z1],[x1,h(x1,z1),z1],[x1,h(x1,z),z],col);}
 for(var x=-W;x<W;x+=2){var gh=h(x,-W);g.box(x+1,gh-1,-W,.0+.0+2,2,.1,C.ground);gh=h(x,W);g.box(x+1,gh-1,W,2,2,.1,C.ground);}
 function rock(x,z,r,seed){var y=h(x,z);g.clayBlob(x,y+r*.40,z,r*.94,r*.53,r*.83,C.stone2,hash(seed,2,9)*2,5,9);g.clayBlob(x+r*.18,y+r*.78,z-r*.12,r*.69,r*.48,r*.64,C.stone,hash(seed,2,13)*2,6,10);addSolid(x,z,r*.83);}
-// Hand-sculpted clay trunks and rounded foliage; original climb collision surfaces retained.
-// Branch graph doubles as both visible structure and traversable surface.
+// Ground-only hunting landscape. Tree climbing and tree meshes removed.
 var branches=[];
-function addBranch(a,b,r,parent,seed){
- g.clayLink(a,b,r,C.wood2);var mid={x:(a.x+b.x)*.5,y:(a.y+b.y)*.5,z:(a.z+b.z)*.5};
- branches.push({type:'branch',a:a,b:b,r:r,parent:parent,x:mid.x,y:mid.y,z:mid.z,height:b.y,top:b.y});
- for(var k=0;k<3;k++){var t=.35+k*.23,px=lerp(a.x,b.x,t),py=lerp(a.y,b.y,t),pz=lerp(a.z,b.z,t);g.clayBlob(px,py+r*.32,pz,r*.55,r*.22,r*.55,k%2?C.wood:C.wood2,0,5,8);}
-}
-function tree(x,z,r,seed){
- var vertexStart=g.v.length;var y=h(x,z),tall=10.2+hash(seed,4,1)*4.1,trunk=r*.69;
- g.clayTrunk(x,y,z,trunk,tall,C.wood);
- var root={x:x,y:y,z:z},top={x:x,y:y+tall,z:z};
- var treeSurface={type:'tree',x:x,z:z,r:trunk,height:tall,top:y+tall,branches:[]};
- for(var i=0;i<5;i++){
-  var ang=i*TAU/5+hash(seed,i,1)*.55,at=y+tall*(.38+i*.09),len=r*(3.4+hash(seed,i,17)*1.7);
-  var a={x:x,y:at,z:z},b={x:x+Math.cos(ang)*len,y:at+.38+hash(seed,i,9)*.42,z:z+Math.sin(ang)*len};
-  addBranch(a,b,trunk*(.98-i*.085),treeSurface,seed+i);treeSurface.branches.push(branches[branches.length-1]);
-  g.clayBlob(b.x,b.y+.55,b.z,r*.78,r*.77,r*.74,[C.leaf,C.leaf2,C.leaf3][i%3],0,7,10);
- }
- g.clayBlob(x,y+tall+.82,z,r*1.48,r*1.45,r*1.35,C.leaf,0,8,12);
- g.clayBlob(x+r*.6,y+tall+.30,z-r*.5,r*1.05,r*.92,r*.96,C.leaf2,0,7,11);
- addSolid(x,z,r*.66);climbables.push(treeSurface);
- var part=new Geometry();part.v=g.v.splice(vertexStart);part.count=part.v.length/9;var treeMesh={buffer:gl.createBuffer(),count:0,usage:gl.STATIC_DRAW};upload(treeMesh,part);treeMeshes.push({mesh:treeMesh,x:x,z:z,r:trunk,height:tall,base:y});return treeSurface;
-}
-// Border forest frame plus featured large tree; ensure open playable central corridor.
-for(var i=0;i<17;i++){var a=i*2.399,r=17+hash(i,4,2)*5.0,x=Math.cos(a)*r,z=Math.sin(a)*r;tree(x,z,.85+hash(i,7,8)*.4,i+30);}
-tree(3,7,1.13,141);tree(-10,-5,1.6,120);tree(10,-11,1.25,145);tree(10,10,1.1,156);tree(-12,10,.9,167);
-rock(1.8,-9.4,1.0,1);rock(-.6,-4.6,.95,2);rock(9,-2.5,1.15,3);rock(-9,5.1,1.45,4);rock(7,6.7,1.05,6);
+rock(1.8,-9.4,.55,1);rock(-.6,-4.6,.5,2);rock(9,-2.5,.6,3);rock(-9,5.1,.7,4);rock(7,6.7,.55,6);
 // Brown log to hide behind, rests diagonally along a foraging route.
 (function(){var x=5,z=-5,y=h(x,z);g.clayLink({x:x-1.80,y:y+.45,z:z+.85},{x:x+1.80,y:y+.45,z:z-.85},.48,C.wood2);
 for(var i=0;i<5;i++){var bx=x-1.5+i*.74;g.clayBlob(bx,y+.80,z+.20-i*.16,.09,.05,.13,C.wood,0,5,7);}addSolid(x,z,1.0);climbables.push({type:"log",x:x,z:z,r:1.0,height:.9,top:y+.9});})();
 // Natural raised rocky outcrop replaces the artificial wall.
 (function(){var x=13,z=2,y=h(x,z);for(var i=0;i<9;i++){var ang=i*2.399,r=1.1+hash(i,8,3)*1.7;g.clayBlob(x+Math.cos(ang)*r,y+.35+i*.14,z+Math.sin(ang)*r,.90,.58,.88,i%2?C.stone:C.stone2,0,6,10);}addSolid(x,z,1.5);})();
-// Near-start tree has a reachable canopy branch with a nest, eggs and a small bird.
-var nestTree=climbables.find(a=>a.type==='tree'&&Math.hypot(a.x-3,a.z-7)<.4);
-var nestBranch=nestTree.branches[0],nestT=.72;
-var NEST={x:lerp(nestBranch.a.x,nestBranch.b.x,nestT),z:lerp(nestBranch.a.z,nestBranch.b.z,nestT),y:lerp(nestBranch.a.y,nestBranch.b.y,nestT)+.32,eggs:2};
-(function(){g.clayBlob(NEST.x,NEST.y-.10,NEST.z,.53,.17,.45,C.wood2,0,6,9);
- for(var i=0;i<9;i++){var a=i*TAU/9;g.clayBlob(NEST.x+Math.cos(a)*.39,NEST.y+.03,NEST.z+Math.sin(a)*.34,.15,.09,.12,C.wood,0,5,7);}})();
+// Ground nest with reachable eggs and a low-flying bird.
+var NEST={x:4.2,z:6.4,y:h(4.2,6.4)+.15,eggs:2};
+(function(){g.clayBlob(NEST.x,NEST.y-.08,NEST.z,.55,.16,.45,C.wood2,0,7,12);for(var i=0;i<9;i++){var a=i*TAU/9;g.clayBlob(NEST.x+Math.cos(a)*.39,NEST.y,NEST.z+Math.sin(a)*.34,.15,.09,.12,C.wood,0,6,10);}})();
 // High branch food with regeneration.
-var fruit=[];for(var fi=0;fi<climbables.length;fi++){var ct=climbables[fi];if(ct.type!=='tree'||Math.hypot(ct.x,ct.z)>17)continue;for(var fj=1;fj<ct.branches.length;fj+=2){var fb=ct.branches[fj],ft=.62;fruit.push({x:lerp(fb.a.x,fb.b.x,ft),y:lerp(fb.a.y,fb.b.y,ft)+fb.r+.21,z:lerp(fb.a.z,fb.b.z,ft),ready:true,respawn:0});}}
+var fruit=[];
 // Burrow made of a low shaded earth rim with dark recessed entrance.
 (function(){var x=BUR.x,z=BUR.z,y=h(x,z);g.box(x,y+.12,z,1.65,.18,1.4,C.ground);g.box(x,y+.24,z-.05,.85,.07,.67,C.dark);for(var i=0;i<8;i++){var a=i*TAU/8;g.box(x+Math.cos(a)*.7,y+.29,z+Math.sin(a)*.6,.34,.24,.33,C.ground);}})();
 // Rat food (voxel seeds and berries)
@@ -192,6 +164,8 @@ function shrub(x,z,r,i){var y=h(x,z);g.clayBlob(x,y+.53,z,r*.86,.65,r*.85,C.leaf
  for(var k=0;k<5;k++){var a=k*TAU/5+.35;g.clayBlob(x+Math.cos(a)*r*.47,y+.53+(k%2)*.10,z+Math.sin(a)*r*.47,r*.46,.42,r*.47,[C.leaf,C.leaf2,C.leaf3][k%3],0,6,9);}
  addBush(x,z,r);}
 [[2,5,1.1],[0,-6.5,1.2],[-2,2.2,1],[-8,.8,1.2],[6,-10,1],[-6,7,1.3],[9,1,1.1],[4.4,-8,1.1],[6,3,1.15],[-1,9,1.3]].forEach((p,i)=>shrub(p[0],p[1],p[2],i+221));
+// Sculpted ground dressing: meadow tufts, pebbles, flowers and earthy ridgelines.
+(function(){for(var i=0;i<850;i++){var x=-20+hash(i,12,71)*40,z=-20+hash(i,13,91)*40,y=h(x,z),r=.035+hash(i,15,27)*.09,kind=hash(i,16,42);if(Math.hypot(x,z-11.3)<1.1)continue;if(kind<.43){g.clayBlob(x,y+.045,z,r*1.5,.035,r*1.3,kind<.2?C.stone:C.stone2,0,4,7);}else if(kind<.83){g.clayBlob(x,y+.09,z,r*.8,.16+hash(i,18,4)*.18,r*.8,kind<.60?C.grass2:C.moss,0,5,7);}else{g.clayBlob(x,y+.10,z,.045,.045,.045,kind<.92?C.flower:C.leaf3,0,5,8);g.clayLink({x:x,y:y,z:z},{x:x,y:y+.12,z:z},.014,C.moss);}}for(var j=0;j<34;j++){var x=-18+hash(j,25,2)*36,z=-18+hash(j,26,3)*36,y=h(x,z),r=.45+hash(j,27,4)*.85;g.clayBlob(x,y+.12,z,r,.20,r*.65,j%3===0?C.ground:C.moss,hash(j,28,5)*3,6,12);}})();
 upload(staticMesh,g);g=null;
 // ----- 3D cobra: body history + constrained coiling/neck + strikes + supported climbing -----
 var snake={x:0,z:11.3,y:h(0,11.3)+.26,heading:Math.PI,speed:0,travel:0,length:2.45,trail:[],caught:0,coil:0,focus:false,headLift:0,aimYaw:Math.PI,aimPitch:0,climb:null,strike:null,swallow:null,cinematic:null};
@@ -324,17 +298,7 @@ window.hunterPause=pause;window.__hunterPlay=function(){playing=true;document.ge
 window.hunterSneak=function(){};
 window.hunterSense=function(){sense=true;var p=nearestFood();say('Nearest '+p.name+' '+p.distance.toFixed(1)+'m',2.5);};
 window.hunterFocus=function(){if(!playing||snake.strike||snake.swallow)return;if(snake.climb){say('Focus on climbing surfaces uses an anchored pose',1.6);}snake.focus=!snake.focus;snake.aimYaw=snake.heading;snake.aimPitch=snake.climb?-.06:-.58;snake.focusTurn=0;snake.focusTilt=0;document.getElementById('focus').classList.toggle('pressed',snake.focus);say(snake.focus?'FOCUS: coil and aim head with joystick':'Move to unfold and slither',2);};
-function findClimb(){var best=null,bd=99;for(var a of climbables){if(a.type==='branch')continue;var d=Math.hypot(snake.x-a.x,snake.z-a.z);if(d<Math.max(.95,a.r+.65)&&d<bd){best=a;bd=d;}}return best;}
-function closestBranch(surface,alt,angle){if(!surface.branches)return null;var chosen=null,dist=99;for(var b of surface.branches){var a=Math.atan2(b.b.z-surface.z,b.b.x-surface.x),d=Math.abs(alt-(b.a.y-h(surface.x,surface.z)))+Math.abs(normAngle(angle-a))*.24;if(d<dist){dist=d;chosen=b;}}return dist<1.15?chosen:null;}
-function surfaceContact(forward){
- if(snake.climb||forward<.12||snake.focus)return;
- var a=findClimb();if(!a)return;
- var angle=Math.atan2(snake.z-a.z,snake.x-a.x);
- var toward=a.type==='tree'?Math.sin(snake.heading)*(a.x-snake.x)+Math.cos(snake.heading)*(a.z-snake.z):1;
- if(toward<.15)return;
- snake.climb={surface:a,ang:angle,alt:Math.max(.26,snake.y-h(a.x,a.z)),attach:0,branchT:0,logT:0};
- say('Surface crawl · steer to wrap, forward to climb',1.8);
-}
+function surfaceContact(){return;}
 function attackTargetPosition(kind){if(kind==='rat')return{x:rat.x,y:h(rat.x,rat.z)+.30,z:rat.z};if(kind==='egg')return{x:NEST.x,y:NEST.y+.18,z:NEST.z};return{x:bird.x,y:bird.y,z:bird.z};}
 function pointSegmentDistance(p,a,b){var dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,L=dx*dx+dy*dy+dz*dz||.0001,t=clamp(((p.x-a.x)*dx+(p.y-a.y)*dy+(p.z-a.z)*dz)/L,0,1);return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t,p.z-a.z-dz*t);}
 var MAX_REACH=2.45;
@@ -421,8 +385,8 @@ function updateSnake(dt){var forward=clamp(-joystick.y+(keys.KeyW||keys.ArrowUp?
   }
   snake.aimYaw=snake.heading;snake.aimPitch=0;recordTrail(old);snake.headLift=lerp(snake.headLift,.18,Math.min(1,dt*4));return;
  }
- surfaceContact(forward);
- if(snake.climb)return;
+ // Ground-only movement: no surface snapping or climbing.
+ snake.climb=null;
  var maximum=keys.ShiftLeft?.86:3.15,target=maximum*forward;snake.speed=lerp(snake.speed,target,1-Math.exp(-dt*5));snake.heading+=turn*dt*2.0*(Math.abs(forward)<.05?.55:1);var old={x:snake.x,y:snake.y,z:snake.z};var nx=clamp(snake.x+Math.sin(snake.heading)*snake.speed*dt,-20.5,20.5),nz=clamp(snake.z+Math.cos(snake.heading)*snake.speed*dt,-20.5,20.5);
  for(var i=0;i<solid.length;i++){var o=solid[i],dx=nx-o.x,dz=nz-o.z,dd=Math.hypot(dx,dz),min=o.r+.28;if(dd<min){nx=o.x+dx/(dd||1)*min;nz=o.z+dz/(dd||1)*min;}}
  snake.x=nx;snake.z=nz;snake.y=h(snake.x,snake.z)+.24;snake.aimYaw=snake.heading;snake.aimPitch=0;recordTrail(old);snake.headLift=lerp(snake.headLift,Math.abs(snake.speed)<.10?.89:0,Math.min(1,dt*3.8));}
@@ -438,9 +402,9 @@ function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0
  // Select a clear orbit candidate; use a persistent angle to prevent camera flip jitter.
  if(!snake.cinematic&&!snake.focus){if(camMode==='wide'){wanted=[head.x-f.x*5.4,head.y+2.8,head.z-f.z*5.4];}else if(camMode==='top'){wanted=[head.x+.01,head.y+7.5,head.z+1.2];}else if(camMode==='side'){wanted=[head.x+Math.cos(snake.heading)*4,head.y+1.7,head.z-Math.sin(snake.heading)*4];}var radius=Math.hypot(wanted[0]-head.x,wanted[2]-head.z),base=Math.atan2(wanted[0]-head.x,wanted[2]-head.z),best=base,bestScore=-1e9;for(var ci=-5;ci<=5;ci++){var ang=base+ci*.27,xx=head.x+Math.sin(ang)*radius,zz=head.z+Math.cos(ang)*radius,score=-Math.abs(ci)*.09;for(var tree of climbables){if(tree.type!=='tree')continue;var dx=xx-head.x,dz=zz-head.z,den=dx*dx+dz*dz||1,t=clamp(((tree.x-head.x)*dx+(tree.z-head.z)*dz)/den,0,1),perp=Math.hypot(head.x+dx*t-tree.x,head.z+dz*t-tree.z);if(t>.08&&t<.95&&perp<tree.r+.42&&head.y<tree.top+.8)score-=5*(1-perp/(tree.r+.42));}score-=Math.abs(normAngle(ang-(window.__hunter.cameraOrbit||base)))*.65;if(score>bestScore){bestScore=score;best=ang;}}window.__hunter.cameraOrbit=best;wanted[0]=head.x+Math.sin(best)*radius;wanted[2]=head.z+Math.cos(best)*radius;wanted[1]=Math.max(wanted[1],h(wanted[0],wanted[2])+1.0);}
  var follow=snake.focus?1:1-Math.exp(-dt*(snake.cinematic?6:3.0));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
- var vp=mul(projection(snake.focus?1.25:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);for(var tm of treeMeshes){var dx=eye[0]-head.x,dz=eye[2]-head.z,den=dx*dx+dz*dz||1,t=clamp(((tm.x-head.x)*dx+(tm.z-head.z)*dz)/den,0,1),perp=Math.hypot(head.x+dx*t-tm.x,head.z+dz*t-tm.z);var blocked=t>.04&&t<.96&&perp<tm.r+.55&&head.y<tm.base+tm.height;var opacity=blocked?.22:1;if(blocked){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);}draw(tm.mesh,opacity);if(blocked){gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);}}var d=new Geometry();snakeModel(d);ratModel(d);extraRatModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
+ var vp=mul(projection(snake.focus?1.25:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);var d=new Geometry();snakeModel(d);ratModel(d);extraRatModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
 // Initial render frame and intro: the scene is visible behind the start panel.
-eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.5.1-tree-boot-fix';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
+eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.6-groundscape';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
 };
 // Lightweight startup — no rendering, terrain generation or WebGL context creation until Start Hunt is pressed.
 window.__hunter.bootstrapped=true;document.getElementById('bootStatus').textContent='Ready. Tap START HUNT to load the offline 3D world.';
