@@ -162,7 +162,7 @@ function tree(x,z,r,seed){
  g.clayBlob(x,y+tall+.82,z,r*1.48,r*1.45,r*1.35,C.leaf,0,8,12);
  g.clayBlob(x+r*.6,y+tall+.30,z-r*.5,r*1.05,r*.92,r*.96,C.leaf2,0,7,11);
  addSolid(x,z,r*.66);climbables.push(treeSurface);
- var part=new Geometry();part.v=g.v.splice(vertexStart);part.count=part.v.length/9;var treeMesh=mesh(false);upload(treeMesh,part);treeMeshes.push({mesh:treeMesh,x:x,z:z,r:trunk,height:tall,base:y});return treeSurface;
+ var part=new Geometry();part.v=g.v.splice(vertexStart);part.count=part.v.length/9;var treeMesh={buffer:gl.createBuffer(),count:0,usage:gl.STATIC_DRAW};upload(treeMesh,part);treeMeshes.push({mesh:treeMesh,x:x,z:z,r:trunk,height:tall,base:y});return treeSurface;
 }
 // Border forest frame plus featured large tree; ensure open playable central corridor.
 for(var i=0;i<17;i++){var a=i*2.399,r=17+hash(i,4,2)*5.0,x=Math.cos(a)*r,z=Math.sin(a)*r;tree(x,z,.85+hash(i,7,8)*.4,i+30);}
@@ -440,7 +440,7 @@ function update(dt){simTime+=dt;cooldown=Math.max(0,cooldown-dt);if(noticeTime>0
  var follow=snake.focus?1:1-Math.exp(-dt*(snake.cinematic?6:3.0));eye[0]=lerp(eye[0],wanted[0],follow);eye[1]=lerp(eye[1],wanted[1],follow);eye[2]=lerp(eye[2],wanted[2],follow);for(var i=0;i<3;i++)look[i]=lerp(look[i],target[i],follow);
  var vp=mul(projection(snake.focus?1.25:1.15,width/heightPx,.09,120),viewmatrix(eye,look));gl.uniformMatrix4fv(loc.vp,false,new Float32Array(vp));gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);draw(staticMesh,1);for(var tm of treeMeshes){var dx=eye[0]-head.x,dz=eye[2]-head.z,den=dx*dx+dz*dz||1,t=clamp(((tm.x-head.x)*dx+(tm.z-head.z)*dz)/den,0,1),perp=Math.hypot(head.x+dx*t-tm.x,head.z+dz*t-tm.z);var blocked=t>.04&&t<.96&&perp<tm.r+.55&&head.y<tm.base+tm.height;var opacity=blocked?.22:1;if(blocked){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);}draw(tm.mesh,opacity);if(blocked){gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);}}var d=new Geometry();snakeModel(d);ratModel(d);extraRatModel(d);canopyModel(d);upload(dynamicMesh,d);draw(dynamicMesh,1);d=new Geometry();buildRadar(d);buildReach(d);upload(radarMesh,d);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);gl.disable(gl.CULL_FACE);draw(radarMesh,.16);gl.enable(gl.CULL_FACE);gl.depthMask(true);gl.disable(gl.BLEND);window.__hunter.frames++;window.__hunter.rendered=staticMesh.count+dynamicMesh.count;window.__hunter.snake=[+snake.x.toFixed(2),+snake.y.toFixed(2),+snake.z.toFixed(2)];window.__hunter.rat=[+rat.x.toFixed(2),+rat.z.toFixed(2),rat.state];window.__hunter.mode=snake.swallow?'capture':snake.focus?'focus':snake.climb?'climb':'navigation';}catch(e){window.hunterError(e.message||e);playing=false;}}requestAnimationFrame(render);
 // Initial render frame and intro: the scene is visible behind the start panel.
-eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.5-giant-tree-visibility';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
+eye=[snake.x,3,17];requestAnimationFrame(render);window.__hunter.ready=true;window.__hunter.version='1.5.1-tree-boot-fix';window.__hunter.debug={snake:snake,rat:rat,bird:bird,nest:NEST,climbables:climbables};
 };
 // Lightweight startup — no rendering, terrain generation or WebGL context creation until Start Hunt is pressed.
 window.__hunter.bootstrapped=true;document.getElementById('bootStatus').textContent='Ready. Tap START HUNT to load the offline 3D world.';
